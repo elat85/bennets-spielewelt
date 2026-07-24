@@ -1,6 +1,6 @@
 /* Service Worker: cached beim ersten Besuch alle Dateien,
    danach läuft die App komplett offline (Cache-first). */
-const CACHE = 'bennet-v4';
+const CACHE = 'bennet-v5';
 const ASSETS = [
   '.',
   'index.html',
