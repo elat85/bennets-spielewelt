@@ -11,7 +11,7 @@ ohne Internet-Links, ohne Datenerfassung.
 | Spiel | So geht's |
 |---|---|
 | 🦖 Dinos füttern | Futter zum richtigen Dino ziehen (T-Rex mag Fleisch, Langhals mag Pflanzen, der Drache frisst alles). 8× füttern = ⭐ |
-| 🦄 Einhorn anmalen | Farbe antippen, dann Fläche antippen. Alles ausgemalt = ⭐, Bild landet in der Galerie links |
+| 🦄 Malbuch | 7 Ausmalbilder, Stifte-Box mit 13 Buntstiften + Glitzer, Regenbogen, Muster, Stempel, Zauberstift und Radierer. Motiv ausgemalt = ⭐, Bild landet in der Galerie |
 | 🌷 Garten dekorieren | Sachen aus der Leiste auf die Wiese ziehen. Der Garten bleibt gespeichert. 8 neue Sachen = ⭐ |
 | 🐔 Hühner füttern | Auf die Wiese tippen streut Körner. Eier antippen zum Einsammeln, 3 Eier = ⭐ |
 | 🤸 Trampolin | Schnell tippen gibt Schwung — bis zur Sonne hüpfen = ⭐ |

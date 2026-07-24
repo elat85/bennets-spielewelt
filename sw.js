@@ -1,6 +1,6 @@
 /* Service Worker: cached beim ersten Besuch alle Dateien,
    danach läuft die App komplett offline (Cache-first). */
-const CACHE = 'bennet-v5';
+const CACHE = 'bennet-v6';
 const ASSETS = [
   '.',
   'index.html',
@@ -19,6 +19,12 @@ const ASSETS = [
   'js/games/trampolin.js',
   'js/games/schaukel.js',
   'img/einhorn.png',
+  'img/regenbogen.png',
+  'img/zauberwiese.png',
+  'img/prinzessin.png',
+  'img/papa-grillt.png',
+  'img/geburtstag.png',
+  'img/zahlen-einhorn.png',
   'icons/icon.svg',
   'icons/icon-192.png',
   'icons/icon-512.png'

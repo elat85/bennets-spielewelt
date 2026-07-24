@@ -9,7 +9,13 @@
   start(stage, api) {
     /* Weitere Motive einfach hier ergänzen (Datei zusätzlich in sw.js eintragen) */
     const MOTIFS = [
-      { id: 'einhorn', file: 'img/einhorn.png' }
+      { id: 'einhorn',        file: 'img/einhorn.png' },
+      { id: 'regenbogen',     file: 'img/regenbogen.png' },
+      { id: 'zauberwiese',    file: 'img/zauberwiese.png' },
+      { id: 'prinzessin',     file: 'img/prinzessin.png' },
+      { id: 'papa-grillt',    file: 'img/papa-grillt.png' },
+      { id: 'geburtstag',     file: 'img/geburtstag.png' },
+      { id: 'zahlen-einhorn', file: 'img/zahlen-einhorn.png' }
     ];
 
     stage.style.background = 'linear-gradient(180deg, #ffd9ec 0%, #f8bbd0 100%)';
@@ -112,7 +118,13 @@
         box-shadow:inset 0 3px 0 rgba(255,255,255,.25), 0 -6px 14px rgba(0,0,0,.2);"></div>
       <div id="eh-gallery" style="position:absolute; left:8px; top:50%; transform:translateY(-50%);
         display:flex; flex-direction:column; gap:8px; z-index:30;"></div>
-      <button id="eh-new" class="btn-round" style="position:absolute; right:12px; bottom:14px; z-index:31;"><span class="icon">${Art.reset()}</span></button>`;
+      <button id="eh-new" class="btn-round" style="position:absolute; right:12px; bottom:14px; z-index:31;"><span class="icon">${Art.reset()}</span></button>
+      <button id="eh-pick" class="btn-round" style="position:absolute; right:12px; bottom:calc(14px + clamp(66px,10vw,90px)); z-index:31;"><span class="icon" style="width:74%; height:74%;">${Art.picture()}</span></button>
+      <div id="eh-chooser" style="position:absolute; inset:0; z-index:40; display:none; overflow-y:auto; touch-action:pan-y;
+        background:linear-gradient(180deg, #ffd9ec 0%, #f8bbd0 100%); padding:clamp(60px,10vh,90px) 4vw 20px;">
+        <div style="text-align:center; font-size:clamp(22px,4vw,34px); font-weight:700; color:#a5487e; margin-bottom:14px;">Such dir ein Bild aus!</div>
+        <div id="eh-chooser-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(clamp(150px,24vw,260px), 1fr)); gap:14px; max-width:1100px; margin:0 auto;"></div>
+      </div>`;
 
     const frame = stage.querySelector('#eh-frame');
     const box = stage.querySelector('#eh-box');
@@ -419,20 +431,42 @@
     }
     renderGallery();
 
-    /* ---------- Neues Bild ---------- */
+    /* ---------- Neues Bild / Bildauswahl ---------- */
     stage.querySelector('#eh-new').addEventListener('pointerdown', () => {
       if (!ready) return;
       Sound.play('whoosh');
       const frac = 1 - countWhite() / whiteAtStart;
       if (frac > 0.3 && !starGiven) saveToGallery(); // angefangenes Werk nicht verlieren
-      if (MOTIFS.length > 1) {
-        openMotif(MOTIFS[(MOTIFS.findIndex(m => m.file === img.src.replace(location.origin + '/', '')) + 1) % MOTIFS.length]);
-      } else {
-        resetCanvas(false);
-      }
+      resetCanvas(false);
     });
 
-    openMotif(MOTIFS[0]);
+    const chooser = stage.querySelector('#eh-chooser');
+    const chooserGrid = stage.querySelector('#eh-chooser-grid');
+    MOTIFS.forEach(m => {
+      const card = document.createElement('button');
+      card.style.cssText = `background:#fff; border:4px solid #f48fb1; border-radius:18px; padding:6px;
+        cursor:pointer; box-shadow:0 5px 0 #d6688e, 0 9px 14px rgba(0,0,0,.18); transition:transform .12s;`;
+      card.innerHTML = `<img src="${m.file}" loading="lazy" style="width:100%; display:block; border-radius:12px;">`;
+      card.addEventListener('pointerdown', () => {
+        Sound.play('pop');
+        chooser.style.display = 'none';
+        openMotif(m);
+      });
+      chooserGrid.appendChild(card);
+    });
+    function showChooser() {
+      if (ready) {
+        const frac = 1 - countWhite() / whiteAtStart;
+        if (frac > 0.3 && !starGiven) saveToGallery();
+      }
+      chooser.style.display = 'block';
+    }
+    stage.querySelector('#eh-pick').addEventListener('pointerdown', () => {
+      Sound.play('tap');
+      showChooser();
+    });
+
+    chooser.style.display = 'block'; // Start: erst Bild aussuchen
 
     return () => {
       window.removeEventListener('pointerup', stopDrag);
