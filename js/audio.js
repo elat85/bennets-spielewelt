@@ -63,6 +63,56 @@ const Sound = (() => {
     wind()    { noise(0.5, { freq: 600, vol: 0.08 }); }
   };
 
+  /* --- Hintergrundmusik: sanfte Spieluhr-Melodie (generativ, kein Download) --- */
+  let musicOn = Storage.get('musicOn', true);
+  let musicTimer = null;
+  let step = 0;
+  // Melodie in C-Dur-Pentatonik, ruhig und freundlich
+  const MELODY = [523, 659, 784, 659, 880, 784, 659, 587, 523, 659, 784, 1047, 880, 784, 659, 523];
+  const BASS   = [131, 175, 196, 131]; // C3 F3 G3 C3, alle 4 Schritte
+
+  function musicTick() {
+    try {
+      const c = ac();
+      const t0 = c.currentTime;
+      const f = MELODY[step % MELODY.length];
+      // Spieluhr-Klang: Grundton + leiser Oberton, schnelles Abklingen
+      [[f, 0.045], [f * 2, 0.015]].forEach(([freq, vol]) => {
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(vol, t0);
+        gain.gain.exponentialRampToValueAtTime(0.0005, t0 + 0.9);
+        osc.connect(gain).connect(c.destination);
+        osc.start(t0);
+        osc.stop(t0 + 1);
+      });
+      if (step % 4 === 0) {
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = BASS[(step / 4) % 4 | 0];
+        gain.gain.setValueAtTime(0.035, t0);
+        gain.gain.exponentialRampToValueAtTime(0.0005, t0 + 1.1);
+        osc.connect(gain).connect(c.destination);
+        osc.start(t0);
+        osc.stop(t0 + 1.2);
+      }
+      step++;
+    } catch (e) { /* Musik darf nie das Spiel stoppen */ }
+  }
+
+  function startMusic() {
+    if (!musicOn || musicTimer) return;
+    musicTick();
+    musicTimer = setInterval(musicTick, 280);
+  }
+  function stopMusic() {
+    clearInterval(musicTimer);
+    musicTimer = null;
+  }
+
   return {
     play(name) {
       if (muted || !effects[name]) return;
@@ -73,6 +123,14 @@ const Sound = (() => {
       Storage.set('muted', muted);
       return muted;
     },
-    isMuted() { return muted; }
+    isMuted() { return muted; },
+    startMusic,
+    toggleMusic() {
+      musicOn = !musicOn;
+      Storage.set('musicOn', musicOn);
+      if (musicOn) startMusic(); else stopMusic();
+      return musicOn;
+    },
+    isMusicOn() { return musicOn; }
   };
 })();

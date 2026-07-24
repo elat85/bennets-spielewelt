@@ -177,8 +177,8 @@ const Art = (() => {
       <circle cx="40" cy="40" r="21" fill="url(#${g})" ${S} stroke-width="4.5"/>
       <path d="M20 40 L6 46 L21 50 Z" fill="#ffa229" ${S} stroke-width="4"/>
       <path d="M26 52 Q22 62 30 60 Q34 58 32 52 Z" fill="#ff6b6b" ${S} stroke-width="3.5"/>
-      <circle cx="36" cy="37" r="4.5" fill="#2d2233"/><circle cx="37.5" cy="35.5" r="1.6" fill="#fff"/>
-      <ellipse cx="68" cy="72" rx="15" ry="11" fill="#e3dbc6" ${S} stroke-width="4" transform="rotate(-15 68 72)"/>`);
+      <g class="art-blink"><circle cx="36" cy="37" r="4.5" fill="#2d2233"/><circle cx="37.5" cy="35.5" r="1.6" fill="#fff"/></g>
+      <g class="art-flap"><ellipse cx="68" cy="72" rx="15" ry="11" fill="#e3dbc6" ${S} stroke-width="4" transform="rotate(-15 68 72)"/></g>`);
   }
 
   function corn() {
@@ -200,7 +200,7 @@ const Art = (() => {
     const g = id('rex');
     return wrap('0 0 140 140', `
       <defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#79c85e"/><stop offset="100%" stop-color="#4e9e3d"/></linearGradient></defs>
-      <path d="M96 78 Q128 70 136 88 Q118 90 100 94 Z" fill="url(#${g})" ${S} stroke-width="4.5"/>
+      <g class="art-tail"><path d="M96 78 Q128 70 136 88 Q118 90 100 94 Z" fill="url(#${g})" ${S} stroke-width="4.5"/></g>
       <g fill="#4e9e3d" ${S} stroke-width="4">
         <path d="M56 26 L64 12 L70 26 Z"/><path d="M74 28 L82 14 L88 30 Z"/><path d="M90 40 L100 30 L102 44 Z"/>
       </g>
@@ -214,7 +214,7 @@ const Art = (() => {
       <g fill="#ffffff" stroke="${OUT}" stroke-width="2">
         <path d="M26 51 L29 56 L32 51 Z"/><path d="M35 52 L38 57 L41 52 Z"/><path d="M44 53 L46 58 L49 53 Z"/>
       </g>
-      <circle cx="42" cy="34" r="6.5" fill="#fff"/><circle cx="43.5" cy="35" r="3.4" fill="#2d2233"/>
+      <g class="art-blink"><circle cx="42" cy="34" r="6.5" fill="#fff"/><circle cx="43.5" cy="35" r="3.4" fill="#2d2233"/></g>
       <path d="M34 26 L48 24" stroke="${OUT}" stroke-width="3.5"/>
       <circle cx="26" cy="38" r="2.6" fill="#2d5c22"/>`);
   }
@@ -223,7 +223,7 @@ const Art = (() => {
     const g = id('bronto');
     return wrap('0 0 150 140', `
       <defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5fc3dd"/><stop offset="100%" stop-color="#3d95b8"/></linearGradient></defs>
-      <path d="M112 92 Q142 84 148 100 Q128 104 112 106 Z" fill="url(#${g})" ${S} stroke-width="4.5"/>
+      <g class="art-tail"><path d="M112 92 Q142 84 148 100 Q128 104 112 106 Z" fill="url(#${g})" ${S} stroke-width="4.5"/></g>
       <ellipse cx="84" cy="98" rx="36" ry="26" fill="url(#${g})" ${S} stroke-width="4.5"/>
       <rect x="60" y="112" width="16" height="24" rx="8" fill="#3d95b8" ${S} stroke-width="4"/>
       <rect x="94" y="112" width="16" height="24" rx="8" fill="#3d95b8" ${S} stroke-width="4"/>
@@ -231,7 +231,7 @@ const Art = (() => {
       <path d="M56 88 Q40 74 38 46 Q37 28 46 22" stroke="url(#${g})" stroke-width="22" fill="none" stroke-linecap="round"/>
       <path d="M56 88 Q40 74 38 46 Q37 28 46 22" stroke="${OUT}" stroke-width="27" fill="none" stroke-linecap="round" opacity="0"/>
       <ellipse cx="48" cy="20" rx="17" ry="13" fill="url(#${g})" ${S} stroke-width="4.5"/>
-      <circle cx="42" cy="17" r="5" fill="#fff"/><circle cx="43" cy="18" r="2.6" fill="#2d2233"/>
+      <g class="art-blink"><circle cx="42" cy="17" r="5" fill="#fff"/><circle cx="43" cy="18" r="2.6" fill="#2d2233"/></g>
       <path d="M36 26 Q42 31 50 29" stroke="${OUT}" stroke-width="3" fill="none"/>
       <circle cx="36" cy="24" r="3.4" fill="#ff9fc0" opacity=".8"/>`);
   }
@@ -240,7 +240,7 @@ const Art = (() => {
     const g = id('drag');
     return wrap('0 0 140 140', `
       <defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b98ae0"/><stop offset="100%" stop-color="#8a5cc4"/></linearGradient></defs>
-      <path d="M98 84 Q126 72 134 86 Q124 88 122 96 Q110 92 98 96 Z" fill="url(#${g})" ${S} stroke-width="4.5"/>
+      <g class="art-tail"><path d="M98 84 Q126 72 134 86 Q124 88 122 96 Q110 92 98 96 Z" fill="url(#${g})" ${S} stroke-width="4.5"/></g>
       <path d="M64 58 Q46 34 64 24 Q60 44 76 52 Z" fill="#ffb1e6" ${S} stroke-width="4"/>
       <ellipse cx="76" cy="88" rx="30" ry="27" fill="url(#${g})" ${S} stroke-width="4.5"/>
       <rect x="58" y="104" width="16" height="28" rx="8" fill="#8a5cc4" ${S} stroke-width="4"/>
@@ -250,7 +250,7 @@ const Art = (() => {
       <circle cx="44" cy="36" r="22" fill="url(#${g})" ${S} stroke-width="4.5"/>
       <ellipse cx="30" cy="44" rx="12" ry="9" fill="#c9a6ec" ${S} stroke-width="4"/>
       <circle cx="26" cy="42" r="2.4" fill="${OUT}"/><circle cx="33" cy="42" r="2.4" fill="${OUT}"/>
-      <circle cx="48" cy="30" r="6" fill="#fff"/><circle cx="49" cy="31" r="3.2" fill="#2d2233"/>
+      <g class="art-blink"><circle cx="48" cy="30" r="6" fill="#fff"/><circle cx="49" cy="31" r="3.2" fill="#2d2233"/></g>
       <path d="M20 52 Q26 58 34 55" stroke="${OUT}" stroke-width="3" fill="none"/>`);
   }
 
@@ -280,7 +280,7 @@ const Art = (() => {
       ${arms[pose]}
       <circle cx="60" cy="34" r="26" fill="#ffd8b5" ${S} stroke-width="4.5"/>
       <path d="M34 30 Q34 8 60 8 Q86 8 86 30 Q76 18 60 20 Q44 18 34 30 Z" fill="#7a4a2b" ${S} stroke-width="4"/>
-      <circle cx="50" cy="36" r="3.6" fill="#2d2233"/><circle cx="70" cy="36" r="3.6" fill="#2d2233"/>
+      <g class="art-blink"><circle cx="50" cy="36" r="3.6" fill="#2d2233"/><circle cx="70" cy="36" r="3.6" fill="#2d2233"/></g>
       <path d="M52 46 Q60 52 68 46" stroke="#2d2233" stroke-width="3.5" fill="none"/>
       <circle cx="43" cy="43" r="4.5" fill="#ffb3a0" opacity=".8"/><circle cx="77" cy="43" r="4.5" fill="#ffb3a0" opacity=".8"/>`);
   }
@@ -542,21 +542,46 @@ const Art = (() => {
       <path d="M22 28 L24 54 M30 28 L30 54 M38 28 L36 54" stroke="#7c8896" stroke-width="4" stroke-linecap="round"/>`);
   }
 
+  function album() {
+    return wrap('0 0 60 60', `
+      <path d="M10 10 Q10 6 14 6 L28 6 Q30 6 30 9 L30 52 Q30 49 27 49 L14 49 Q10 49 10 45 Z" fill="#68b8e8" stroke="#3d85b8" stroke-width="3.5" stroke-linejoin="round"/>
+      <path d="M50 10 Q50 6 46 6 L32 6 Q30 6 30 9 L30 52 Q30 49 33 49 L46 49 Q50 49 50 45 Z" fill="#8fd0f2" stroke="#3d85b8" stroke-width="3.5" stroke-linejoin="round"/>
+      <path d="M36 20 L38.5 26 L45 26.5 L40 30.5 L41.8 37 L36 33.5 L30.5 37 L32 30.5 L27 26.5 L33.5 26 Z" fill="#ffd93b" stroke="#e8a000" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M15 18 L25 18 M15 25 L25 25 M15 32 L23 32" stroke="#3d85b8" stroke-width="2.5" stroke-linecap="round"/>`);
+  }
+
+  function note(on = true) {
+    return wrap('0 0 60 60', `
+      <path d="M22 44 L22 14 L46 9 L46 38" stroke="${on ? '#7a55c8' : '#a8a0b8'}" stroke-width="5" fill="none" stroke-linejoin="round"/>
+      <ellipse cx="16" cy="45" rx="8" ry="6.5" fill="${on ? '#7a55c8' : '#a8a0b8'}"/>
+      <ellipse cx="40" cy="39" rx="8" ry="6.5" fill="${on ? '#9a76e0' : '#bcb4cc'}"/>
+      ${on ? '' : `<path d="M8 8 L52 52" stroke="#e05d4b" stroke-width="5" stroke-linecap="round"/>`}`);
+  }
+
   function reset() {
     return wrap('0 0 60 60', `
       <path d="M46 30 A16 16 0 1 1 38 16" fill="none" stroke="#68b8e8" stroke-width="7" stroke-linecap="round"/>
       <path d="M34 6 L46 16 L32 24 Z" fill="#68b8e8"/>`);
   }
 
-  /* Mini-Einhorn für die Menü-Kachel */
+  /* Mini-Einhorn (Kopf) für Menü-Kachel und Sticker */
   function unicornMini() {
     return wrap('0 0 120 120', `
-      <polygon points="74,32 88,2 92,34" fill="#ffd93b" ${S} stroke-width="4"/>
-      <path d="M64 40 Q40 34 34 52 Q30 70 48 74 L52 60 Q56 76 72 72 Q88 66 84 48 Q80 36 64 40 Z" fill="#ff8fc7" ${S} stroke-width="4"/>
-      <path d="M36 96 Q30 60 58 46 Q88 32 104 52 Q112 64 102 72 L106 84 Q108 94 96 94 Q80 108 56 106 Q40 104 36 96 Z" fill="#fdf6ff" ${S} stroke-width="4.5"/>
-      <circle cx="82" cy="62" r="5" fill="#2d2233"/><circle cx="83.5" cy="60.5" r="1.8" fill="#fff"/>
-      <ellipse cx="70" cy="76" rx="7" ry="5" fill="#ffb1e6" opacity=".8"/>
-      <path d="M98 66 Q102 69 100 73" stroke="#2d2233" stroke-width="2.5" fill="none"/>`);
+      <polygon points="56,28 66,2 78,30" fill="#ffd93b" ${S} stroke-width="3.5"/>
+      <path d="M62 20 L74 16 M64 11 L72 8" stroke="${OUT}" stroke-width="2"/>
+      <polygon points="40,36 44,16 58,32" fill="#fdf6ff" ${S} stroke-width="3.5"/>
+      <polygon points="80,30 92,14 96,36" fill="#fdf6ff" ${S} stroke-width="3.5"/>
+      <polygon points="45,32 47,22 55,31" fill="#ffc9de"/>
+      <polygon points="84,29 90,20 92,33" fill="#ffc9de"/>
+      <path d="M52 30 C 30 16, 8 32, 22 54 C 28 64, 44 62, 46 50 Q 48 38 52 30 Z" fill="#ff8fc7" ${S} stroke-width="3.5"/>
+      <path d="M40 54 C 18 56, 14 82, 36 90 C 50 94, 58 82, 52 70 Q 46 60 40 54 Z" fill="#c98ae0" ${S} stroke-width="3.5"/>
+      <circle cx="70" cy="68" r="38" fill="#fdf6ff" ${S} stroke-width="4"/>
+      <ellipse cx="98" cy="86" rx="17" ry="13" fill="#fdf6ff" ${S} stroke-width="3.5"/>
+      <ellipse cx="74" cy="62" rx="8" ry="10" fill="#3c2e42"/>
+      <circle cx="77" cy="58" r="3" fill="#fff"/><circle cx="71" cy="66" r="1.6" fill="#fff"/>
+      <path d="M82 52 L88 46 M84 60 L92 57" stroke="#3c2e42" stroke-width="2" fill="none"/>
+      <ellipse cx="88" cy="76" rx="7" ry="4.5" fill="#ff9fc0" opacity=".65"/>
+      <path d="M96 92 Q102 97 109 91" stroke="#7a5f6e" stroke-width="2.5" fill="none"/>`);
   }
 
   /* Mini-Schaukel für die Menü-Kachel */
@@ -595,7 +620,7 @@ const Art = (() => {
     chicken, corn, egg, dinoRex, dinoBronto, dinoDragon, kid, plush, pillow,
     foods, garden,
     sofa, bed, chair, toybox, basket, windowArt, picture,
-    star, home, speaker, trashcan, reset, unicornMini, swingMini, trampolineMini,
+    star, home, speaker, trashcan, reset, album, note, unicornMini, swingMini, trampolineMini,
     particles
   };
 })();

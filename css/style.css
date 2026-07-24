@@ -318,6 +318,114 @@ html, body {
 .anim-pop     { animation: pop-in .3s ease forwards; }
 .anim-float   { animation: hover-float 3s ease-in-out infinite; }
 
+/* ===== Sticker-Album ===== */
+.album-screen {
+  background: linear-gradient(180deg, #ffe9c9 0%, #ffd9a0 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: max(10px, env(safe-area-inset-top));
+}
+.album-title {
+  margin-top: clamp(60px, 11vh, 90px);
+  font-size: clamp(24px, 4.5vw, 40px);
+  font-weight: 700;
+  color: #8d5a3b;
+  text-shadow: 0 2px 0 rgba(255,255,255,.6);
+}
+.album-grid {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(80px, 12vw, 130px), 1fr));
+  gap: clamp(10px, 2vw, 20px);
+  padding: 16px clamp(14px, 3vw, 40px) 24px;
+  overflow-y: auto;
+  touch-action: pan-y;
+  align-content: start;
+}
+.sticker {
+  position: relative;
+  aspect-ratio: 1;
+  background: linear-gradient(180deg, #ffffff, #f6efdf);
+  border: 3px solid #e8c890;
+  border-radius: 20px;
+  padding: 10%;
+  box-shadow: 0 4px 0 #d9b06c, 0 8px 12px rgba(120, 80, 20, .15);
+}
+.sticker.locked svg { filter: brightness(0) opacity(.15); }
+.sticker.locked { background: #efe6d2; }
+.sticker .sticker-lock {
+  position: absolute;
+  inset: 30%;
+  filter: none;
+  opacity: .8;
+}
+.badge-new {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ff5252;
+  border: 3px solid #fff;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+/* ===== Update-Hinweis ===== */
+.update-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #ffffff, #f3ecdc);
+  border: 3px solid #68b8e8;
+  border-radius: 40px;
+  padding: 12px 26px;
+  font-family: 'Fredoka', sans-serif;
+  font-size: clamp(16px, 2.5vw, 20px);
+  font-weight: 600;
+  color: #2c5a80;
+  box-shadow: 0 5px 0 #4a9ad0, 0 10px 20px rgba(0,0,0,.25);
+  z-index: 300;
+  cursor: pointer;
+  animation: pop-in .4s ease;
+}
+
+/* ===== Figuren-Leben: Blinzeln, Flügelschlag, Schwanzwedeln ===== */
+.art-blink {
+  animation: art-blink 4.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes art-blink {
+  0%, 91%, 100% { transform: scaleY(1); }
+  94%           { transform: scaleY(.06); }
+}
+.art-flap {
+  animation: art-flap 2.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 30% 20%;
+}
+@keyframes art-flap {
+  0%, 100% { transform: rotate(0deg); }
+  8%       { transform: rotate(-14deg); }
+  16%      { transform: rotate(0deg); }
+  24%      { transform: rotate(-10deg); }
+  32%      { transform: rotate(0deg); }
+}
+.art-tail {
+  animation: art-wag 2.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+@keyframes art-wag {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(7deg); }
+}
+
 /* ===== Farbige Kacheln ===== */
 .tile-dino      { background: linear-gradient(165deg, #66c157 0%, #3d9134 100%); }
 .tile-einhorn   { background: linear-gradient(165deg, #ff9ad5 0%, #cf58ae 100%); }

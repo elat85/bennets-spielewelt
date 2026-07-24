@@ -27,9 +27,36 @@
   <script src="js/games/schaukel.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // Offline-Cache nur im echten Betrieb, nicht beim lokalen Entwickeln
+    // Offline-Cache nur im echten Betrieb, nicht beim lokalen Entwickeln.
+    // Bei neuer Version: Hinweis zeigen, Antippen lädt sofort neu.
     if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
-      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+      window.addEventListener('load', async () => {
+        try {
+          const reg = await navigator.serviceWorker.register('sw.js');
+          function offerUpdate(worker) {
+            if (document.querySelector('.update-toast')) return;
+            const toast = document.createElement('div');
+            toast.className = 'update-toast';
+            toast.textContent = '✨ Neue Version! Hier tippen';
+            toast.addEventListener('pointerdown', () => {
+              worker.postMessage('SKIP_WAITING');
+              toast.remove();
+            });
+            document.body.appendChild(toast);
+          }
+          if (reg.waiting && navigator.serviceWorker.controller) offerUpdate(reg.waiting);
+          reg.addEventListener('updatefound', () => {
+            const nw = reg.installing;
+            nw && nw.addEventListener('statechange', () => {
+              if (nw.state === 'installed' && navigator.serviceWorker.controller) offerUpdate(nw);
+            });
+          });
+          let reloaded = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!reloaded) { reloaded = true; location.reload(); }
+          });
+        } catch (e) { /* offline o.ä. */ }
+      });
     }
   </script>
 </body>

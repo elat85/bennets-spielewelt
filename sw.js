@@ -1,6 +1,6 @@
 /* Service Worker: cached beim ersten Besuch alle Dateien,
    danach läuft die App komplett offline (Cache-first). */
-const CACHE = 'bennet-v2';
+const CACHE = 'bennet-v3';
 const ASSETS = [
   '.',
   'index.html',
@@ -24,7 +24,13 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  // kein skipWaiting: die neue Version wartet, bis der Nutzer den
+  // Update-Hinweis antippt (sonst würde die App mitten im Spiel neu laden)
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+});
+
+self.addEventListener('message', (e) => {
+  if (e.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', (e) => {

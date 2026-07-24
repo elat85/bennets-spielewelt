@@ -43,8 +43,8 @@ Reines HTML/CSS/JavaScript ohne Build-System. PWA mit Service Worker
 synthetisiert, Grafiken sind SVG/Emoji — keine externen Ressourcen, keine
 Abhängigkeiten.
 
-Lokal starten: beliebigen Webserver im Ordner starten, z. B.
-`python -m http.server 8642`, dann http://localhost:8642 öffnen.
+Lokal starten: `python serve.py` (Dev-Server ohne Caching), dann
+http://localhost:8642 öffnen.
 
 ## Update veröffentlichen
 

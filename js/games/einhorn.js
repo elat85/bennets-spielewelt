@@ -30,10 +30,11 @@
       return v === 'rainbow' ? `url(#${gradId})` : (v || DEFAULT_FILL);
     }
 
-    /* Das Einhorn als SVG – gleiche Vorlage für Malbild und Galerie-Minis */
+    /* Das Einhorn als SVG (Chibi-Stil: großer Kopf, großes Auge, fließende Mähne)
+       – gleiche Vorlage für Malbild und Galerie-Minis */
     function svgMarkup(f, gradId) {
       const g = r => fillValue(f[r], gradId);
-      const S = 'stroke="#7a5f6e" stroke-width="3" stroke-linejoin="round"';
+      const S = 'stroke="#7a5f6e" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"';
       return `
       <svg viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
         <defs>
@@ -43,43 +44,60 @@
             <stop offset="80%" stop-color="#4fc3f7"/><stop offset="100%" stop-color="#ab47bc"/>
           </linearGradient>
         </defs>
-        <ellipse cx="210" cy="300" rx="150" ry="12" fill="rgba(0,0,0,.08)"/>
-        <!-- Schweif -->
+        <!-- Deko-Sternchen -->
+        <path d="M52 44 L56 56 L68 60 L56 64 L52 76 L48 64 L36 60 L48 56 Z" fill="#ffd93b" opacity=".75"/>
+        <path d="M378 200 L381 209 L390 212 L381 215 L378 224 L375 215 L366 212 L375 209 Z" fill="#ff8fc7" opacity=".75"/>
+        <ellipse cx="195" cy="306" rx="135" ry="10" fill="rgba(0,0,0,.08)"/>
+        <!-- Schweif: fließende Locken -->
         <path data-region="schweif" fill="${g('schweif')}" ${S}
-          d="M120 160 C 75 140, 60 190, 85 215 C 60 220, 70 260, 100 250 C 90 275, 125 280, 135 255 C 140 230, 135 190, 130 170 Z"/>
+          d="M108 176 C 70 160, 38 172, 42 200 C 20 208, 26 240, 54 240 C 40 258, 66 274, 86 260 C 96 252, 104 234, 106 218 C 108 204, 110 188, 108 176 Z"/>
         <!-- Beine -->
         <g data-region="beine" fill="${g('beine')}" ${S}>
-          <rect x="150" y="215" width="22" height="70" rx="10"/>
-          <rect x="188" y="222" width="22" height="66" rx="10"/>
-          <rect x="232" y="222" width="22" height="66" rx="10"/>
-          <rect x="268" y="215" width="22" height="70" rx="10"/>
+          <rect x="102" y="232" width="26" height="62" rx="13"/>
+          <rect x="146" y="238" width="26" height="58" rx="13"/>
+          <rect x="196" y="238" width="26" height="58" rx="13"/>
+          <rect x="238" y="232" width="26" height="62" rx="13"/>
         </g>
         <!-- Hufe -->
         <g data-region="hufe" fill="${g('hufe')}" ${S}>
-          <rect x="149" y="272" width="24" height="16" rx="7"/>
-          <rect x="187" y="275" width="24" height="16" rx="7"/>
-          <rect x="231" y="275" width="24" height="16" rx="7"/>
-          <rect x="267" y="272" width="24" height="16" rx="7"/>
+          <rect x="101" y="276" width="28" height="20" rx="9"/>
+          <rect x="145" y="278" width="28" height="20" rx="9"/>
+          <rect x="195" y="278" width="28" height="20" rx="9"/>
+          <rect x="237" y="276" width="28" height="20" rx="9"/>
         </g>
         <!-- Körper -->
-        <ellipse data-region="koerper" cx="215" cy="185" rx="88" ry="56" fill="${g('koerper')}" ${S}/>
-        <!-- Flügel -->
+        <ellipse data-region="koerper" cx="188" cy="212" rx="90" ry="56" fill="${g('koerper')}" ${S}/>
+        <!-- Flügel: drei weiche Federbögen -->
         <path data-region="fluegel" fill="${g('fluegel')}" ${S}
-          d="M205 150 C 170 110, 120 115, 118 145 C 140 142, 150 148, 148 158 C 165 152, 178 158, 176 168 C 190 164, 202 168, 205 178 Z"/>
-        <!-- Hals + Kopf -->
-        <path data-region="kopf" fill="${g('kopf')}" ${S}
-          d="M270 160 C 275 120, 285 95, 305 82 C 330 66, 355 72, 362 88 C 368 100, 362 108, 352 112 L 356 124 C 358 132, 350 140, 340 138 C 330 152, 318 160, 300 170 C 290 178, 275 175, 270 160 Z"/>
-        <!-- Mähne -->
-        <path data-region="maehne1" fill="${g('maehne1')}" ${S} d="M300 78 C 285 60, 260 62, 258 82 C 256 98, 272 108, 284 100 C 294 94, 300 88, 300 78 Z"/>
-        <path data-region="maehne2" fill="${g('maehne2')}" ${S} d="M272 100 C 252 90, 235 100, 240 118 C 244 133, 264 136, 272 124 C 278 116, 276 106, 272 100 Z"/>
-        <path data-region="maehne3" fill="${g('maehne3')}" ${S} d="M252 128 C 232 122, 220 136, 228 152 C 234 164, 254 164, 258 150 C 261 141, 258 132, 252 128 Z"/>
-        <!-- Horn -->
-        <polygon data-region="horn" points="330,70 348,18 352,72" fill="${g('horn')}" ${S}/>
+          d="M186 170 C 172 132, 130 120, 104 138 C 116 143, 121 151, 116 159 C 132 155, 141 162, 138 172 C 152 168, 161 175, 158 186 C 170 182, 180 178, 186 170 Z"/>
+        <!-- Mähne hinten (fällt auf den Rücken) -->
+        <path data-region="maehne3" fill="${g('maehne3')}" ${S}
+          d="M234 138 C 200 140, 188 176, 218 194 C 236 204, 256 190, 248 168 C 243 154, 238 146, 234 138 Z"/>
+        <path data-region="maehne2" fill="${g('maehne2')}" ${S}
+          d="M252 84 C 214 76, 192 110, 218 142 C 232 158, 258 148, 254 124 C 252 108, 250 96, 252 84 Z"/>
+        <!-- Horn (Basis liegt hinter dem Kopf) -->
+        <polygon data-region="horn" points="294,48 310,2 326,50" fill="${g('horn')}" ${S}/>
+        <!-- Kopf mit Ohren und Schnauze -->
+        <g data-region="kopf" fill="${g('kopf')}" ${S}>
+          <polygon points="262,66 272,30 290,60"/>
+          <polygon points="316,58 336,28 346,62"/>
+          <circle cx="295" cy="112" r="58"/>
+          <ellipse cx="340" cy="140" rx="28" ry="21"/>
+        </g>
+        <!-- Stirnlocke (liegt über dem Kopf) -->
+        <path data-region="maehne1" fill="${g('maehne1')}" ${S}
+          d="M283 52 C 250 22, 210 42, 226 82 C 234 100, 262 100, 270 80 C 274 68, 280 60, 283 52 Z"/>
         <!-- Gesicht (fest) -->
-        <circle cx="330" cy="95" r="5" fill="#4a3540"/>
-        <circle cx="332" cy="93" r="1.6" fill="#fff"/>
-        <ellipse cx="318" cy="112" rx="7" ry="5" fill="rgba(244,143,177,.55)"/>
-        <path d="M350 100 C 354 103, 354 107, 350 109" stroke="#4a3540" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M300 34 L318 28 M305 18 L315 14" stroke="#7a5f6e" stroke-width="2.5" fill="none"/>
+        <polygon points="270,58 275,42 284,56" fill="#ffc9de" opacity=".85"/>
+        <polygon points="323,52 332,38 339,55" fill="#ffc9de" opacity=".85"/>
+        <ellipse cx="302" cy="104" rx="12" ry="15" fill="#3c2e42"/>
+        <circle cx="306" cy="98" r="4.5" fill="#ffffff"/>
+        <circle cx="297" cy="110" r="2.2" fill="#ffffff"/>
+        <path d="M313 90 L321 82 M316 99 L326 95 M316 107 L326 108" stroke="#3c2e42" stroke-width="2.5" fill="none"/>
+        <ellipse cx="324" cy="132" rx="10" ry="6" fill="#ff9fc0" opacity=".6"/>
+        <circle cx="348" cy="135" r="2.6" fill="#7a5f6e" opacity=".55"/>
+        <path d="M338 152 Q 347 160 357 151" stroke="#7a5f6e" stroke-width="3" fill="none"/>
       </svg>`;
     }
 

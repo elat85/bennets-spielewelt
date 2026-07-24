@@ -85,6 +85,52 @@ const UI = (() => {
     return h + '</span>';
   }
 
+  /* --- Sticker-Album: alle 3 Sterne wird ein Sticker freigeschaltet --- */
+  const STICKERS = [
+    () => Art.unicornMini(), () => Art.chicken(), () => Art.dinoRex(), () => Art.plush('teddy'),
+    () => Art.garden.tulpe(), () => Art.egg(), () => Art.foods.apfel(), () => Art.garden.schmetterling(),
+    () => Art.dinoBronto(), () => Art.plush('bunny'), () => Art.garden.sonnenblume(), () => Art.foods.banane(),
+    () => Art.garden.ente(), () => Art.kid('jump'), () => Art.pillow(), () => Art.garden.pilz(),
+    () => Art.dinoDragon(), () => Art.plush('pig'), () => Art.garden.biene(), () => Art.foods.keule(),
+    () => Art.sun(), () => Art.garden.brunnen(), () => Art.plush('koala'), () => Art.garden.vogelhaus(),
+    () => Art.tree()
+  ];
+  const STAR_PER_STICKER = 3;
+  const unlockedStickers = () => Math.min(Math.floor(Storage.totalStars() / STAR_PER_STICKER), STICKERS.length);
+  const hasNewSticker = () => unlockedStickers() > Storage.get('album.seen', 0);
+
+  function showAlbum() {
+    if (currentCleanup) { try { currentCleanup(); } catch (e) {} currentCleanup = null; }
+    const unlocked = unlockedStickers();
+    const seen = Storage.get('album.seen', 0);
+    app.innerHTML = '';
+    const scr = document.createElement('div');
+    scr.className = 'screen album-screen';
+    const toNext = STAR_PER_STICKER - (Storage.totalStars() % STAR_PER_STICKER);
+    let grid = '';
+    STICKERS.forEach((fn, i) => {
+      const isNew = i >= seen && i < unlocked;
+      const locked = i >= unlocked;
+      grid += `<div class="sticker ${locked ? 'locked' : ''} ${isNew ? 'anim-pop' : ''}"
+        style="${isNew ? `animation-delay:${0.3 + (i - seen) * 0.25}s; animation-fill-mode:backwards;` : ''}">
+        ${fn()}${locked ? `<span class="sticker-lock icon">${Art.star(false)}</span>` : ''}</div>`;
+    });
+    scr.innerHTML = `
+      <div class="game-topbar">
+        <button class="btn-round" id="album-home"><span class="icon">${Art.home()}</span></button>
+        <div class="game-progress">${unlocked < STICKERS.length ? starRowHtml(STAR_PER_STICKER - toNext, STAR_PER_STICKER) : '<span class="icon">' + Art.star(true) + '</span>'}</div>
+      </div>
+      <div class="album-title">Meine Sticker</div>
+      <div class="album-grid">${grid}</div>`;
+    app.appendChild(scr);
+    scr.querySelector('#album-home').addEventListener('pointerdown', () => { Sound.play('tap'); showHub(); });
+    if (unlocked > seen) {
+      Sound.play('yay');
+      confetti(20);
+      Storage.set('album.seen', unlocked);
+    }
+  }
+
   /* --- Hauptmenü --- */
   function showHub() {
     if (currentCleanup) { try { currentCleanup(); } catch (e) {} currentCleanup = null; }
@@ -95,8 +141,17 @@ const UI = (() => {
     hub.innerHTML = `
       ${Art.meadowScene({ sunPos: 'left' })}
       <div class="hub-topbar">
-        <div class="star-counter"><span class="icon">${Art.star(true)}</span><span id="total-stars">${Storage.totalStars()}</span></div>
-        <button class="btn-round" id="mute-btn"><span class="icon">${Art.speaker(!Sound.isMuted())}</span></button>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <div class="star-counter"><span class="icon">${Art.star(true)}</span><span id="total-stars">${Storage.totalStars()}</span></div>
+          <button class="btn-round" id="album-btn" style="position:relative;">
+            <span class="icon">${Art.album()}</span>
+            ${hasNewSticker() ? '<span class="badge-new"></span>' : ''}
+          </button>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-round" id="music-btn"><span class="icon">${Art.note(Sound.isMusicOn())}</span></button>
+          <button class="btn-round" id="mute-btn"><span class="icon">${Art.speaker(!Sound.isMuted())}</span></button>
+        </div>
       </div>
       <div class="hub-title">Bennets Spielewelt</div>
       <div class="hub-subtitle">Such dir ein Spiel aus!</div>
@@ -123,6 +178,15 @@ const UI = (() => {
       const m = Sound.toggleMute();
       btn.querySelector('.icon').innerHTML = Art.speaker(!m);
       if (!m) Sound.play('pop');
+    });
+    hub.querySelector('#music-btn').addEventListener('pointerdown', (e) => {
+      const btn = e.currentTarget;
+      const on = Sound.toggleMusic();
+      btn.querySelector('.icon').innerHTML = Art.note(on);
+    });
+    hub.querySelector('#album-btn').addEventListener('pointerdown', () => {
+      Sound.play('pop');
+      showAlbum();
     });
     app.appendChild(hub);
   }
@@ -160,11 +224,34 @@ const UI = (() => {
     currentCleanup = g.start(stage, api) || null;
   }
 
-  return { showHub, startGame, burst };
+  return { showHub, showAlbum, startGame, burst };
 })();
 
 /* Kein Kontextmenü, kein Doppeltipp-Zoom */
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('dblclick', e => e.preventDefault());
+
+/* Musik darf erst nach der ersten Berührung starten (Browser-Vorgabe) */
+document.addEventListener('pointerdown', function firstTouch() {
+  document.removeEventListener('pointerdown', firstTouch);
+  Sound.startMusic();
+});
+
+/* Bildschirm beim Spielen anlassen (Wake Lock, wo unterstützt) */
+(() => {
+  let lock = null;
+  async function acquire() {
+    try {
+      if ('wakeLock' in navigator && !lock) {
+        lock = await navigator.wakeLock.request('screen');
+        lock.addEventListener('release', () => { lock = null; });
+      }
+    } catch (e) { /* z.B. Energiesparmodus – kein Problem */ }
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') acquire();
+  });
+  document.addEventListener('pointerdown', acquire, { once: true });
+})();
 
 UI.showHub();
