@@ -1,0 +1,231 @@
+/* ===== Basis ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  background: #7ec850;
+}
+
+#app { position: fixed; inset: 0; }
+
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* ===== Hub / Hauptmenü ===== */
+.hub {
+  background: linear-gradient(180deg, #8fd3ff 0%, #c9ecff 45%, #a5e06b 45%, #7ec850 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: max(10px, env(safe-area-inset-top)) 16px 16px;
+}
+
+.hub-title {
+  font-size: clamp(26px, 5vw, 46px);
+  color: #fff;
+  text-shadow: 0 3px 0 rgba(60, 120, 40, .55);
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin: 4px 0 2px;
+  text-align: center;
+}
+
+.hub-topbar {
+  position: absolute;
+  top: max(10px, env(safe-area-inset-top));
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.hub-topbar > * { pointer-events: auto; }
+
+.star-counter {
+  background: rgba(255, 255, 255, .9);
+  border-radius: 40px;
+  padding: 8px 20px;
+  font-size: clamp(20px, 3.5vw, 30px);
+  font-weight: 800;
+  color: #e8a000;
+  box-shadow: 0 3px 8px rgba(0,0,0,.15);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tile-grid {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(10px, 2vw, 22px);
+  align-content: center;
+  padding: 10px 0;
+}
+@media (orientation: portrait) {
+  .tile-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.game-tile {
+  border: none;
+  border-radius: 26px;
+  min-height: clamp(110px, 22vh, 210px);
+  font-size: clamp(48px, 9vw, 90px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(0,0,0,.18), 0 10px 18px rgba(0,0,0,.12);
+  transition: transform .1s;
+  color: #fff;
+}
+.game-tile:active { transform: scale(.94) translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,.18); }
+.game-tile .tile-label {
+  font-size: clamp(13px, 2vw, 20px);
+  font-weight: 700;
+  text-shadow: 0 2px 2px rgba(0,0,0,.25);
+}
+.game-tile .tile-stars {
+  font-size: clamp(11px, 1.6vw, 16px);
+  color: #ffe45c;
+  min-height: 1.2em;
+  letter-spacing: 1px;
+}
+
+/* ===== Runde Buttons (Home, Mute, Aktionen) ===== */
+.btn-round {
+  width: clamp(56px, 9vw, 76px);
+  height: clamp(56px, 9vw, 76px);
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,.92);
+  font-size: clamp(26px, 4.5vw, 38px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0,0,0,.18);
+  transition: transform .1s;
+}
+.btn-round:active { transform: scale(.9); }
+
+/* ===== Spiel-Bildschirm-Gerüst ===== */
+.game-screen { background: #cfeeff; }
+
+.game-topbar {
+  position: absolute;
+  top: max(8px, env(safe-area-inset-top));
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 50;
+  pointer-events: none;
+}
+.game-topbar > * { pointer-events: auto; }
+
+.game-progress {
+  background: rgba(255,255,255,.85);
+  border-radius: 40px;
+  padding: 6px 18px;
+  font-size: clamp(18px, 3vw, 26px);
+  font-weight: 800;
+  box-shadow: 0 3px 8px rgba(0,0,0,.15);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.game-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* ===== Sprites & Partikel ===== */
+.sprite {
+  position: absolute;
+  line-height: 1;
+  will-change: transform;
+  pointer-events: none;
+}
+.sprite.tappable { pointer-events: auto; cursor: pointer; }
+
+.particle {
+  position: absolute;
+  pointer-events: none;
+  line-height: 1;
+  animation: particle-fly .9s ease-out forwards;
+  z-index: 60;
+}
+@keyframes particle-fly {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(.4); opacity: 0; }
+}
+
+.fly-star {
+  position: fixed;
+  font-size: 60px;
+  z-index: 200;
+  pointer-events: none;
+  transition: all 1s cubic-bezier(.4, -0.2, .6, 1.2);
+}
+
+/* ===== Wiederkehrende Animationen ===== */
+@keyframes wobble {
+  0%, 100% { transform: rotate(-4deg); }
+  50%      { transform: rotate(4deg); }
+}
+@keyframes bounce-happy {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30%      { transform: translateY(-18px) scale(1.08); }
+  60%      { transform: translateY(0) scale(.96); }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.12); }
+}
+@keyframes shake-no {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-8px) rotate(-4deg); }
+  75%      { transform: translateX(8px) rotate(4deg); }
+}
+@keyframes float-cloud {
+  from { transform: translateX(-160px); }
+  to   { transform: translateX(calc(100vw + 160px)); }
+}
+@keyframes pop-in {
+  0%   { transform: scale(0); }
+  75%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.anim-wobble  { animation: wobble 1.6s ease-in-out infinite; }
+.anim-happy   { animation: bounce-happy .6s ease; }
+.anim-pulse   { animation: pulse 1.2s ease-in-out infinite; }
+.anim-shake   { animation: shake-no .4s ease; }
+.anim-pop     { animation: pop-in .3s ease forwards; }
+
+/* ===== Farbige Kacheln ===== */
+.tile-dino      { background: linear-gradient(160deg, #55b84f, #2e8f3c); }
+.tile-einhorn   { background: linear-gradient(160deg, #ff9ad5, #d55fb8); }
+.tile-garten    { background: linear-gradient(160deg, #8bc34a, #558b2f); }
+.tile-huehner   { background: linear-gradient(160deg, #ffb74d, #ef8c00); }
+.tile-trampolin { background: linear-gradient(160deg, #64b5f6, #1976d2); }
+.tile-kissen    { background: linear-gradient(160deg, #b39ddb, #7e57c2); }
+.tile-schaukel  { background: linear-gradient(160deg, #4dd0e1, #0097a7); }
