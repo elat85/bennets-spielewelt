@@ -1,10 +1,19 @@
+/* ===== Schrift ===== */
+@font-face {
+  font-family: 'Fredoka';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('../fonts/fredoka-latin.woff2') format('woff2');
+}
+
 /* ===== Basis ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
   height: 100%;
   overflow: hidden;
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family: 'Fredoka', 'Segoe UI', system-ui, sans-serif;
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -18,11 +27,16 @@ html, body {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  animation: screen-in .35s ease-out;
+}
+@keyframes screen-in {
+  from { opacity: 0; transform: scale(1.04); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 /* ===== Hub / Hauptmenü ===== */
 .hub {
-  background: linear-gradient(180deg, #8fd3ff 0%, #c9ecff 45%, #a5e06b 45%, #7ec850 100%);
+  background: linear-gradient(180deg, #6ec3f5 0%, #a5dcff 40%, #cdeeff 62%, #93cf62 62%, #7ec850 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,13 +44,21 @@ html, body {
 }
 
 .hub-title {
-  font-size: clamp(26px, 5vw, 46px);
+  font-size: clamp(30px, 5.5vw, 54px);
   color: #fff;
-  text-shadow: 0 3px 0 rgba(60, 120, 40, .55);
-  font-weight: 800;
-  letter-spacing: 1px;
-  margin: 4px 0 2px;
+  text-shadow: 0 3px 0 #4d8f3a, 0 6px 14px rgba(40, 90, 30, .4);
+  font-weight: 700;
+  letter-spacing: .5px;
+  margin: 2px 0 0;
   text-align: center;
+  z-index: 2;
+}
+.hub-subtitle {
+  font-size: clamp(13px, 1.8vw, 18px);
+  color: #2c6420;
+  font-weight: 600;
+  z-index: 2;
+  margin-bottom: 2px;
 }
 
 .hub-topbar {
@@ -47,82 +69,97 @@ html, body {
   display: flex;
   justify-content: space-between;
   pointer-events: none;
+  z-index: 20;
 }
 .hub-topbar > * { pointer-events: auto; }
 
 .star-counter {
-  background: rgba(255, 255, 255, .9);
+  background: linear-gradient(180deg, #ffffff, #f3ecdc);
+  border: 3px solid #e8a000;
   border-radius: 40px;
-  padding: 8px 20px;
+  padding: 6px 18px 6px 10px;
   font-size: clamp(20px, 3.5vw, 30px);
-  font-weight: 800;
-  color: #e8a000;
-  box-shadow: 0 3px 8px rgba(0,0,0,.15);
+  font-weight: 700;
+  color: #d98e00;
+  box-shadow: 0 4px 0 #c78a10, 0 8px 16px rgba(0,0,0,.18);
   display: flex;
   align-items: center;
   gap: 8px;
 }
+.star-counter .icon { width: 1.3em; height: 1.3em; }
 
 .tile-grid {
   flex: 1;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1250px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: clamp(10px, 2vw, 22px);
+  gap: clamp(10px, 2vw, 24px);
   align-content: center;
-  padding: 10px 0;
+  padding: 8px 0;
+  z-index: 2;
 }
 @media (orientation: portrait) {
   .tile-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 .game-tile {
+  position: relative;
   border: none;
-  border-radius: 26px;
-  min-height: clamp(110px, 22vh, 210px);
-  font-size: clamp(48px, 9vw, 90px);
+  border-radius: 28px;
+  min-height: clamp(120px, 24vh, 220px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 10px 8px 12px;
   cursor: pointer;
-  box-shadow: 0 6px 0 rgba(0,0,0,.18), 0 10px 18px rgba(0,0,0,.12);
-  transition: transform .1s;
+  box-shadow: inset 0 -6px 0 rgba(0,0,0,.16), inset 0 3px 0 rgba(255,255,255,.35), 0 8px 0 rgba(0,0,0,.18), 0 14px 22px rgba(0,0,0,.15);
+  transition: transform .12s;
   color: #fff;
+  font-family: inherit;
+  overflow: hidden;
 }
-.game-tile:active { transform: scale(.94) translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,.18); }
+.game-tile:active { transform: scale(.94) translateY(4px); box-shadow: inset 0 -3px 0 rgba(0,0,0,.16), 0 3px 0 rgba(0,0,0,.18); }
+.game-tile .tile-art {
+  width: clamp(64px, 11vw, 120px);
+  aspect-ratio: 1;
+  filter: drop-shadow(0 5px 4px rgba(0,0,0,.22));
+  margin-bottom: 2px;
+}
 .game-tile .tile-label {
-  font-size: clamp(13px, 2vw, 20px);
-  font-weight: 700;
-  text-shadow: 0 2px 2px rgba(0,0,0,.25);
+  font-size: clamp(14px, 2vw, 21px);
+  font-weight: 600;
+  text-shadow: 0 2px 3px rgba(0,0,0,.3);
+  letter-spacing: .3px;
 }
 .game-tile .tile-stars {
-  font-size: clamp(11px, 1.6vw, 16px);
-  color: #ffe45c;
-  min-height: 1.2em;
-  letter-spacing: 1px;
+  display: flex;
+  gap: 2px;
+  min-height: clamp(12px, 1.8vw, 18px);
 }
+.game-tile .tile-stars .icon { width: clamp(12px, 1.8vw, 18px); height: clamp(12px, 1.8vw, 18px); }
 
-/* ===== Runde Buttons (Home, Mute, Aktionen) ===== */
+/* ===== Runde Buttons ===== */
 .btn-round {
-  width: clamp(56px, 9vw, 76px);
-  height: clamp(56px, 9vw, 76px);
+  width: clamp(56px, 9vw, 78px);
+  height: clamp(56px, 9vw, 78px);
   border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,.92);
-  font-size: clamp(26px, 4.5vw, 38px);
+  border: 3px solid rgba(0,0,0,.1);
+  background: linear-gradient(180deg, #ffffff, #ece4d2);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 0 rgba(0,0,0,.18);
-  transition: transform .1s;
+  box-shadow: 0 5px 0 #c9bfa8, 0 9px 14px rgba(0,0,0,.2);
+  transition: transform .12s;
+  padding: 0;
 }
-.btn-round:active { transform: scale(.9); }
+.btn-round:active { transform: scale(.88) translateY(3px); box-shadow: 0 2px 0 #c9bfa8; }
+.btn-round .icon { width: 62%; height: 62%; }
 
-/* ===== Spiel-Bildschirm-Gerüst ===== */
+/* ===== Spiel-Bildschirm ===== */
 .game-screen { background: #cfeeff; }
 
 .game-topbar {
@@ -133,22 +170,27 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 50;
+  z-index: 90;
   pointer-events: none;
 }
 .game-topbar > * { pointer-events: auto; }
 
 .game-progress {
-  background: rgba(255,255,255,.85);
+  background: linear-gradient(180deg, #ffffff, #f3ecdc);
+  border: 3px solid rgba(0,0,0,.08);
   border-radius: 40px;
   padding: 6px 18px;
   font-size: clamp(18px, 3vw, 26px);
-  font-weight: 800;
-  box-shadow: 0 3px 8px rgba(0,0,0,.15);
+  font-weight: 700;
+  color: #5b4a38;
+  box-shadow: 0 4px 0 #c9bfa8, 0 8px 14px rgba(0,0,0,.16);
   display: flex;
   align-items: center;
   gap: 6px;
 }
+.game-progress .icon { width: 1.2em; height: 1.2em; }
+.game-progress .stars-row { display: flex; gap: 3px; }
+.game-progress .stars-row .icon { width: 1.1em; height: 1.1em; }
 
 .game-stage {
   position: absolute;
@@ -165,6 +207,14 @@ html, body {
   pointer-events: none;
 }
 .sprite.tappable { pointer-events: auto; cursor: pointer; }
+.sprite .icon, .icon { display: block; width: 100%; height: 100%; }
+
+.char-shadow {
+  position: absolute;
+  background: radial-gradient(ellipse at center, rgba(30,50,20,.30) 0%, rgba(30,50,20,0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
 
 .particle {
   position: absolute;
@@ -174,27 +224,68 @@ html, body {
   z-index: 60;
 }
 @keyframes particle-fly {
-  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
-  100% { transform: translate(var(--dx), var(--dy)) scale(.4); opacity: 0; }
+  0%   { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(.4) rotate(var(--rot, 120deg)); opacity: 0; }
 }
 
+.confetti-bit {
+  position: fixed;
+  width: 12px;
+  height: 18px;
+  border-radius: 4px;
+  z-index: 240;
+  pointer-events: none;
+  animation: confetti-fall 1.6s ease-in forwards;
+}
+@keyframes confetti-fall {
+  0%   { transform: translateY(-40px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(680deg); opacity: .8; }
+}
+
+/* Sternen-Feier */
+.celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 230;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.celebration .big-star {
+  width: min(38vw, 300px);
+  aspect-ratio: 1;
+  animation: star-pop 1.15s cubic-bezier(.2, 1.4, .5, 1) forwards;
+  filter: drop-shadow(0 0 30px rgba(255, 217, 59, .8));
+}
+@keyframes star-pop {
+  0%   { transform: scale(0) rotate(-160deg); }
+  55%  { transform: scale(1.15) rotate(8deg); }
+  75%  { transform: scale(1) rotate(0deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
 .fly-star {
   position: fixed;
-  font-size: 60px;
-  z-index: 200;
+  width: 70px;
+  height: 70px;
+  z-index: 240;
   pointer-events: none;
-  transition: all 1s cubic-bezier(.4, -0.2, .6, 1.2);
+  transition: all .9s cubic-bezier(.4, -0.2, .6, 1.1);
 }
 
 /* ===== Wiederkehrende Animationen ===== */
 @keyframes wobble {
-  0%, 100% { transform: rotate(-4deg); }
-  50%      { transform: rotate(4deg); }
+  0%, 100% { transform: rotate(-3deg); }
+  50%      { transform: rotate(3deg); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(1.04) scaleX(1.01); }
 }
 @keyframes bounce-happy {
   0%, 100% { transform: translateY(0) scale(1); }
-  30%      { transform: translateY(-18px) scale(1.08); }
-  60%      { transform: translateY(0) scale(.96); }
+  30%      { transform: translateY(-20px) scale(1.06, .96); }
+  60%      { transform: translateY(0) scale(.96, 1.05); }
 }
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
@@ -202,30 +293,36 @@ html, body {
 }
 @keyframes shake-no {
   0%, 100% { transform: translateX(0); }
-  25%      { transform: translateX(-8px) rotate(-4deg); }
-  75%      { transform: translateX(8px) rotate(4deg); }
+  25%      { transform: translateX(-9px) rotate(-4deg); }
+  75%      { transform: translateX(9px) rotate(4deg); }
 }
 @keyframes float-cloud {
-  from { transform: translateX(-160px); }
-  to   { transform: translateX(calc(100vw + 160px)); }
+  from { transform: translateX(-180px); }
+  to   { transform: translateX(calc(100vw + 180px)); }
 }
 @keyframes pop-in {
   0%   { transform: scale(0); }
   75%  { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
+@keyframes hover-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
 
-.anim-wobble  { animation: wobble 1.6s ease-in-out infinite; }
+.anim-wobble  { animation: wobble 1.8s ease-in-out infinite; }
+.anim-breathe { animation: breathe 2.4s ease-in-out infinite; transform-origin: bottom center; }
 .anim-happy   { animation: bounce-happy .6s ease; }
 .anim-pulse   { animation: pulse 1.2s ease-in-out infinite; }
 .anim-shake   { animation: shake-no .4s ease; }
 .anim-pop     { animation: pop-in .3s ease forwards; }
+.anim-float   { animation: hover-float 3s ease-in-out infinite; }
 
 /* ===== Farbige Kacheln ===== */
-.tile-dino      { background: linear-gradient(160deg, #55b84f, #2e8f3c); }
-.tile-einhorn   { background: linear-gradient(160deg, #ff9ad5, #d55fb8); }
-.tile-garten    { background: linear-gradient(160deg, #8bc34a, #558b2f); }
-.tile-huehner   { background: linear-gradient(160deg, #ffb74d, #ef8c00); }
-.tile-trampolin { background: linear-gradient(160deg, #64b5f6, #1976d2); }
-.tile-kissen    { background: linear-gradient(160deg, #b39ddb, #7e57c2); }
-.tile-schaukel  { background: linear-gradient(160deg, #4dd0e1, #0097a7); }
+.tile-dino      { background: linear-gradient(165deg, #66c157 0%, #3d9134 100%); }
+.tile-einhorn   { background: linear-gradient(165deg, #ff9ad5 0%, #cf58ae 100%); }
+.tile-garten    { background: linear-gradient(165deg, #9ccc50 0%, #5d9430 100%); }
+.tile-huehner   { background: linear-gradient(165deg, #ffbb54 0%, #ec8500 100%); }
+.tile-trampolin { background: linear-gradient(165deg, #64b5f6 0%, #1868c0 100%); }
+.tile-kissen    { background: linear-gradient(165deg, #b49ae0 0%, #7550bb 100%); }
+.tile-schaukel  { background: linear-gradient(165deg, #4dd0e1 0%, #00889b 100%); }

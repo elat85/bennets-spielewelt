@@ -2,40 +2,58 @@
    Richtig hoch schaukeln = Regenbogen und 1 Stern. */
 (window.GameModules = window.GameModules || {}).schaukel = {
   title: 'Schaukeln',
-  icon: '🧒',
   tileClass: 'tile-schaukel',
 
   start(stage, api) {
-    stage.style.background = 'linear-gradient(180deg, #81d4fa 0%, #b3e5fc 55%, #aed581 78%, #7cb342 100%)';
+    stage.style.background = 'linear-gradient(180deg, #6ec3f5 0%, #b5e3ff 55%, #93cf62 78%, #7ec850 100%)';
 
-    stage.innerHTML += `
-      <div class="sprite" style="left:6%; top:6%; font-size:64px;">🌞</div>
-      <div class="sprite" style="top:14%; font-size:56px; animation:float-cloud 42s linear infinite;">☁️</div>
-      <div class="sprite" style="left:4%; bottom:4%; font-size:90px;">🌳</div>
-      <div class="sprite" style="right:3%; bottom:5%; font-size:80px;">🌳</div>
-      <div class="sprite" id="sw-rainbow" style="left:calc(50% - 80px); top:6%; font-size:160px; opacity:0; transition:opacity .6s; z-index:2;">🌈</div>`;
+    const rainbowSvg = `
+      <svg viewBox="0 0 300 160" style="width:100%; height:100%;">
+        <g fill="none" stroke-linecap="round">
+          <path d="M20 160 A130 130 0 0 1 280 160" stroke="#ff5252" stroke-width="16"/>
+          <path d="M38 160 A112 112 0 0 1 262 160" stroke="#ffa726" stroke-width="16"/>
+          <path d="M56 160 A94 94 0 0 1 244 160" stroke="#ffee58" stroke-width="16"/>
+          <path d="M74 160 A76 76 0 0 1 226 160" stroke="#66bb6a" stroke-width="16"/>
+          <path d="M92 160 A58 58 0 0 1 208 160" stroke="#4fc3f7" stroke-width="16"/>
+          <path d="M110 160 A40 40 0 0 1 190 160" stroke="#ab47bc" stroke-width="16"/>
+        </g>
+      </svg>`;
 
-    const W = () => stage.clientWidth;
+    stage.innerHTML = Art.meadowScene({
+      sunPos: 'left',
+      extras: `<div id="sw-rainbow" style="position:absolute; left:calc(50% - clamp(120px,19vw,180px)); top:4%;
+        width:clamp(240px,38vw,360px); aspect-ratio:300/160; opacity:0; transition:opacity .6s;">${rainbowSvg}</div>`
+    });
+
     const ROPE = Math.min(300, stage.clientHeight * 0.45);
 
     // Gestell
     const frame = document.createElement('div');
     frame.style.cssText = 'position:absolute; inset:0; pointer-events:none; z-index:5;';
     frame.innerHTML = `
-      <div style="position:absolute; left:50%; top:14%; width:${ROPE * 1.15}px; height:16px; background:#6d4c41; border-radius:8px; transform:translateX(-50%); box-shadow:0 3px 4px rgba(0,0,0,.2);"></div>
-      <div style="position:absolute; left:calc(50% - ${ROPE * 0.52}px); top:14%; width:14px; height:${ROPE * 1.25}px; background:#795548; border-radius:7px; transform:rotate(12deg); transform-origin:top center;"></div>
-      <div style="position:absolute; left:calc(50% + ${ROPE * 0.52}px); top:14%; width:14px; height:${ROPE * 1.25}px; background:#795548; border-radius:7px; transform:rotate(-12deg); transform-origin:top center;"></div>`;
+      <div style="position:absolute; left:50%; top:14%; width:${ROPE * 1.15}px; height:18px;
+        background:linear-gradient(#8d6748,#6b4b3a); border-radius:9px; transform:translateX(-50%);
+        box-shadow:inset 0 3px 0 rgba(255,255,255,.2), 0 4px 6px rgba(0,0,0,.25);"></div>
+      <div style="position:absolute; left:calc(50% - ${ROPE * 0.52}px); top:14%; width:16px; height:${ROPE * 1.28}px;
+        background:linear-gradient(90deg,#8d6748,#75543f); border-radius:8px; transform:rotate(12deg); transform-origin:top center;
+        box-shadow:inset 2px 0 0 rgba(255,255,255,.15);"></div>
+      <div style="position:absolute; left:calc(50% + ${ROPE * 0.52}px); top:14%; width:16px; height:${ROPE * 1.28}px;
+        background:linear-gradient(90deg,#8d6748,#75543f); border-radius:8px; transform:rotate(-12deg); transform-origin:top center;
+        box-shadow:inset 2px 0 0 rgba(255,255,255,.15);"></div>`;
     stage.appendChild(frame);
 
     // Schaukel (dreht um den Aufhängepunkt)
     const swing = document.createElement('div');
-    swing.style.cssText = `position:absolute; left:50%; top:calc(14% + 8px); width:0; height:0;
+    swing.style.cssText = `position:absolute; left:50%; top:calc(14% + 9px); width:0; height:0;
       z-index:6; will-change:transform;`;
     swing.innerHTML = `
-      <div style="position:absolute; left:-30px; top:0; width:6px; height:${ROPE}px; background:#8d6e63; border-radius:3px;"></div>
-      <div style="position:absolute; left:24px;  top:0; width:6px; height:${ROPE}px; background:#8d6e63; border-radius:3px;"></div>
-      <div style="position:absolute; left:-42px; top:${ROPE}px; width:84px; height:14px; background:linear-gradient(#e53935,#b71c1c); border-radius:7px; box-shadow:0 3px 4px rgba(0,0,0,.25);"></div>
-      <div style="position:absolute; left:-32px; top:${ROPE - 58}px; font-size:64px; line-height:1;">🧒</div>`;
+      <div style="position:absolute; left:-32px; top:0; width:7px; height:${ROPE}px; background:linear-gradient(90deg,#a5784e,#8d6748); border-radius:4px;"></div>
+      <div style="position:absolute; left:25px;  top:0; width:7px; height:${ROPE}px; background:linear-gradient(90deg,#a5784e,#8d6748); border-radius:4px;"></div>
+      <div style="position:absolute; left:-46px; top:${ROPE}px; width:92px; height:16px;
+        background:linear-gradient(#e05d4b,#b23a2c); border:3px solid #8d2b20; border-radius:8px;
+        box-shadow:inset 0 3px 0 rgba(255,255,255,.3), 0 4px 5px rgba(0,0,0,.3);"></div>
+      <div style="position:absolute; left:-44px; top:${ROPE - 102}px; width:88px; height:97px;
+        filter:drop-shadow(0 3px 4px rgba(0,0,0,.25));">${Art.kid('sit')}</div>`;
     stage.appendChild(swing);
 
     let theta = 0.12;   // Auslenkung in rad
@@ -50,8 +68,7 @@
       return Math.min(5, Math.floor((maxAmp / 1.22) * 5)); // 1.22 rad ≈ 70°
     }
     function updateProgress() {
-      const l = level();
-      api.setProgress('⭐'.repeat(l) + '☆'.repeat(5 - l));
+      api.setProgress(api.starRow(level(), 5));
     }
     updateProgress();
 
@@ -92,7 +109,7 @@
       if (amp > 1.22 && now > starCooldown) {
         starCooldown = now + 9000;
         rainbow.style.opacity = '1';
-        api.burst(W() / 2, stage.clientHeight * 0.2, ['🌈', '✨', '🦋'], 10, 32);
+        api.burst(stage.clientWidth / 2, stage.clientHeight * 0.22, ['rainbowdot', 'sparkle'], 10, 30);
         Sound.play('yay');
         api.awardStar();
         maxAmp = 0;

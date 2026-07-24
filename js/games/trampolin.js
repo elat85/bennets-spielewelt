@@ -3,42 +3,49 @@
    Bis ganz nach oben zur Sonne hüpfen = 1 Stern. */
 (window.GameModules = window.GameModules || {}).trampolin = {
   title: 'Trampolin',
-  icon: '🤸',
   tileClass: 'tile-trampolin',
 
   start(stage, api) {
-    stage.style.background = 'linear-gradient(180deg, #ffd54f 0%, #90caf9 18%, #bbdefb 55%, #e3f2fd 78%, #aed581 92%, #7cb342 100%)';
-
-    // Deko: Sonne oben (Ziel), Wolken auf verschiedenen Höhen
-    stage.innerHTML += `
-      <div class="sprite anim-pulse" id="tr-sun" style="left:calc(50% - 40px); top:2%; font-size:80px; z-index:3;">🌞</div>
-      <div class="sprite" style="top:22%; font-size:60px; animation:float-cloud 38s linear infinite;">☁️</div>
-      <div class="sprite" style="top:40%; font-size:48px; animation:float-cloud 55s linear infinite; animation-delay:-20s;">☁️</div>
-      <div class="sprite" style="top:58%; font-size:54px; animation:float-cloud 46s linear infinite; animation-delay:-35s;">🎈</div>`;
+    stage.style.background = 'linear-gradient(180deg, #4aa8e8 0%, #8fd0f5 30%, #c8e9fb 62%, #93cf62 88%, #7ec850 100%)';
+    stage.innerHTML = `
+      <div class="art-layer" style="position:absolute; inset:0; pointer-events:none; z-index:0;">
+        <div id="tr-sun" class="anim-pulse" style="position:absolute; left:calc(50% - clamp(45px,7vw,65px)); top:2%; width:clamp(90px,14vw,130px); aspect-ratio:1;">${Art.sun()}</div>
+        <div style="position:absolute; top:20%; width:clamp(90px,13vw,150px); aspect-ratio:16/9; animation:float-cloud 40s linear infinite;">${Art.cloud()}</div>
+        <div style="position:absolute; top:38%; width:clamp(70px,10vw,120px); aspect-ratio:16/9; animation:float-cloud 58s linear infinite; animation-delay:-22s;">${Art.cloud()}</div>
+        <div style="position:absolute; top:56%; width:clamp(60px,9vw,100px); aspect-ratio:16/9; animation:float-cloud 48s linear infinite; animation-delay:-38s; opacity:.8;">${Art.cloud()}</div>
+        <div style="position:absolute; left:0; right:0; bottom:4%; height:12%;">${Art.hills('#8cc95e', 1)}</div>
+        <div style="position:absolute; left:2%; bottom:4%; width:clamp(70px,10vw,120px); aspect-ratio:120/150;">${Art.tree()}</div>
+        <div style="position:absolute; right:2%; bottom:4%; width:clamp(80px,11vw,140px); aspect-ratio:140/80;">${Art.bush()}</div>
+      </div>`;
 
     // Trampolin
     const tramp = document.createElement('div');
-    tramp.style.cssText = 'position:absolute; left:50%; transform:translateX(-50%); bottom:6%; z-index:10; text-align:center;';
+    tramp.style.cssText = 'position:absolute; left:50%; transform:translateX(-50%); bottom:5%; z-index:10; text-align:center;';
     tramp.innerHTML = `
-      <div id="tr-mat" style="width:min(260px,40vw); height:26px; background:linear-gradient(#4dd0e1,#0097a7);
-        border-radius:50%; box-shadow:0 4px 0 #006064; transition:transform .1s;"></div>
-      <div style="display:flex; justify-content:space-between; width:min(220px,34vw); margin:0 auto;">
-        <div style="width:10px; height:44px; background:#455a64; border-radius:4px; transform:rotate(14deg);"></div>
-        <div style="width:10px; height:44px; background:#455a64; border-radius:4px; transform:rotate(-14deg);"></div>
+      <div id="tr-mat" style="width:min(280px,42vw); height:28px;
+        background:linear-gradient(180deg,#5adcc6,#1e9a86); border:4px solid #147a6a;
+        border-radius:50%; box-shadow:inset 0 4px 0 rgba(255,255,255,.35), 0 5px 0 #0d5c50; transition:transform .1s;"></div>
+      <div style="display:flex; justify-content:space-between; width:min(230px,35vw); margin:-2px auto 0;">
+        <div style="width:11px; height:48px; background:linear-gradient(#607d8b,#455a64); border-radius:5px; transform:rotate(14deg);"></div>
+        <div style="width:11px; height:48px; background:linear-gradient(#607d8b,#455a64); border-radius:5px; transform:rotate(-14deg);"></div>
       </div>`;
     stage.appendChild(tramp);
     const mat = tramp.querySelector('#tr-mat');
 
-    // Kind
+    // Kind + Schatten
+    const shadow = document.createElement('div');
+    shadow.className = 'char-shadow';
+    shadow.style.cssText = 'left:calc(50% - 45px); width:90px; height:20px; z-index:9;';
+    stage.appendChild(shadow);
     const kid = document.createElement('div');
     kid.className = 'sprite';
-    kid.textContent = '🤸';
-    kid.style.cssText = 'left:calc(50% - 35px); font-size:70px; z-index:12;';
+    kid.innerHTML = Art.kid('jump');
+    kid.style.cssText = 'left:calc(50% - 45px); width:90px; height:99px; z-index:12; filter:drop-shadow(0 4px 4px rgba(0,0,0,.2));';
     stage.appendChild(kid);
 
     const H = () => stage.clientHeight;
-    const KID = 70;
-    const matY = () => H() - H() * 0.06 - 44 - 20; // Oberkante Sprungtuch
+    const KID = 99;
+    const matY = () => H() - H() * 0.05 - 48 - 24; // Oberkante Sprungtuch
 
     let y = matY() - KID;   // Oberkante des Kindes
     let vy = 0;
@@ -46,6 +53,7 @@
     const BASE_V = 750, MAX_V = 2350;
     let tapsSinceBounce = 0;
     let spin = 0, spinning = false;
+    let squashUntil = 0;
     let running = true;
     let starCooldown = 0;
 
@@ -53,16 +61,15 @@
       return Math.min(5, Math.floor((bounceV - BASE_V) / ((MAX_V - BASE_V) / 5)));
     }
     function updateProgress() {
-      const l = level();
-      api.setProgress('⭐'.repeat(l) + '☆'.repeat(5 - l));
+      api.setProgress(api.starRow(level(), 5));
     }
     updateProgress();
 
     function onTap() {
       tapsSinceBounce++;
       Sound.play('tap');
-      kid.style.filter = 'brightness(1.3)';
-      setTimeout(() => kid.style.filter = '', 120);
+      kid.style.filter = 'drop-shadow(0 4px 4px rgba(0,0,0,.2)) brightness(1.25)';
+      setTimeout(() => kid.style.filter = 'drop-shadow(0 4px 4px rgba(0,0,0,.2))', 120);
     }
     stage.addEventListener('pointerdown', onTap);
 
@@ -88,8 +95,9 @@
         tapsSinceBounce = 0;
         vy = -bounceV;
         Sound.play('boing');
-        mat.style.transform = 'scaleY(1.6) translateY(6px)';
+        mat.style.transform = 'scaleY(1.6) translateY(7px)';
         setTimeout(() => mat.style.transform = '', 110);
+        squashUntil = now + 130;
         spinning = bounceV > 1500;
         spin = 0;
         updateProgress();
@@ -106,13 +114,19 @@
       // Sonne erreicht?
       if (y < H() * 0.14 && now > starCooldown) {
         starCooldown = now + 8000;
-        api.burst(stage.clientWidth / 2, H() * 0.12, ['🌟', '✨', '🌈'], 12, 34);
+        api.burst(stage.clientWidth / 2, H() * 0.12, ['sparkle', 'rainbowdot'], 12, 34);
         Sound.play('yay');
         api.awardStar();
         bounceV = BASE_V; // neue Runde
       }
 
-      kid.style.transform = `translateY(${y}px) rotate(${spin}deg)`;
+      // Squash & Stretch: gestaucht beim Absprung, gestreckt im Flug
+      const squash = now < squashUntil ? 'scale(1.18, .78)' : (Math.abs(vy) > 900 ? 'scale(.94, 1.08)' : 'scale(1,1)');
+      kid.style.transform = `translateY(${y}px) rotate(${spin}deg) ${squash}`;
+      // Schatten: klein und blass, wenn das Kind hoch fliegt
+      const hFrac = 1 - Math.min(Math.max((matY() - KID - y) / (H() * 0.8), 0), 1);
+      shadow.style.transform = `translateY(${matY() - 8}px) scale(${0.55 + hFrac * 0.45})`;
+      shadow.style.opacity = 0.35 + hFrac * 0.65;
       raf = requestAnimationFrame(loop);
     }
     // Kind startet mit kleinem Hüpfer

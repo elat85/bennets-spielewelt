@@ -1,13 +1,15 @@
 /* Service Worker: cached beim ersten Besuch alle Dateien,
    danach läuft die App komplett offline (Cache-first). */
-const CACHE = 'bennet-v1';
+const CACHE = 'bennet-v2';
 const ASSETS = [
   '.',
   'index.html',
   'manifest.json',
   'css/style.css',
+  'fonts/fredoka-latin.woff2',
   'js/storage.js',
   'js/audio.js',
+  'js/art.js',
   'js/main.js',
   'js/games/huehner.js',
   'js/games/dino.js',

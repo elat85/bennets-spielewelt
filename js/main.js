@@ -1,50 +1,88 @@
 /* Hub, Navigation und gemeinsame Spiel-Helfer.
    Jedes Spiel registriert sich in GameModules (siehe js/games/*.js) mit:
-   { title, icon, tileClass, goal, start(stage, api) -> cleanupFn } */
+   { title, tileArt, tileClass, start(stage, api) -> cleanupFn } */
 const GameModules = window.GameModules || (window.GameModules = {});
 
 const UI = (() => {
   const app = document.getElementById('app');
   const ORDER = ['dino', 'einhorn', 'garten', 'huehner', 'trampolin', 'kissen', 'schaukel'];
+  const TILE_ART = {
+    dino: () => Art.dinoRex(),
+    einhorn: () => Art.unicornMini(),
+    garten: () => Art.garden.tulpe(),
+    huehner: () => Art.chicken(),
+    trampolin: () => Art.trampolineMini(),
+    kissen: () => Art.pillow(),
+    schaukel: () => Art.swingMini()
+  };
   let currentCleanup = null;
 
-  /* --- Emoji-Partikel-Explosion, von allen Spielen genutzt --- */
-  function burst(container, x, y, emojis, count = 8, size = 30) {
+  /* --- Partikel-Explosion: SVG-Partikel (Art.particles) oder Text --- */
+  function burst(container, x, y, kinds, count = 8, size = 30) {
     for (let i = 0; i < count; i++) {
+      const kind = kinds[Math.floor(Math.random() * kinds.length)];
       const p = document.createElement('div');
       p.className = 'particle';
-      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      p.style.left = x + 'px';
-      p.style.top = y + 'px';
-      p.style.fontSize = (size * (0.7 + Math.random() * 0.6)) + 'px';
+      if (Art.particles[kind]) p.innerHTML = Art.particles[kind];
+      else p.textContent = kind;
+      const s = size * (0.7 + Math.random() * 0.6);
+      p.style.cssText += `left:${x}px; top:${y}px; width:${s}px; height:${s}px; font-size:${s}px;`;
       const ang = Math.random() * Math.PI * 2;
       const dist = 50 + Math.random() * 90;
       p.style.setProperty('--dx', Math.cos(ang) * dist + 'px');
       p.style.setProperty('--dy', (Math.sin(ang) * dist - 40) + 'px');
+      p.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg');
       container.appendChild(p);
       setTimeout(() => p.remove(), 1000);
     }
   }
 
-  /* --- Stern vergeben: Sound, Flug-Animation, Speicherung --- */
+  /* --- Konfetti-Regen über den ganzen Bildschirm --- */
+  function confetti(n = 34) {
+    const colors = ['#ff6b6b', '#ffd93b', '#7ac74f', '#68b8e8', '#b49ae0', '#ff8fc7', '#ff9f43'];
+    for (let i = 0; i < n; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti-bit';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[i % colors.length];
+      c.style.animationDelay = Math.random() * 0.5 + 's';
+      c.style.animationDuration = (1.3 + Math.random() * 0.9) + 's';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 2600);
+    }
+  }
+
+  /* --- Stern vergeben: große Feier + Flug zum Zähler --- */
   function awardStar(gameId) {
     Storage.addStar(gameId);
     Sound.play('star');
-    const star = document.createElement('div');
-    star.className = 'fly-star';
-    star.textContent = '⭐';
-    star.style.left = '50%';
-    star.style.top = '50%';
-    star.style.transform = 'translate(-50%, -50%) scale(3)';
-    document.body.appendChild(star);
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      star.style.left = '90%';
-      star.style.top = '30px';
-      star.style.transform = 'scale(1)';
-    }));
-    setTimeout(() => star.remove(), 1200);
-    const prog = document.querySelector('.game-progress');
-    if (prog) prog.classList.add('anim-pulse');
+    confetti();
+    const cele = document.createElement('div');
+    cele.className = 'celebration';
+    cele.innerHTML = `<div class="big-star">${Art.star(true)}</div>`;
+    document.body.appendChild(cele);
+    setTimeout(() => {
+      cele.remove();
+      const fly = document.createElement('div');
+      fly.className = 'fly-star';
+      fly.innerHTML = Art.star(true);
+      fly.style.left = 'calc(50% - 35px)';
+      fly.style.top = 'calc(50% - 35px)';
+      document.body.appendChild(fly);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        fly.style.left = 'calc(100% - 90px)';
+        fly.style.top = '20px';
+        fly.style.transform = 'scale(.5)';
+      }));
+      setTimeout(() => fly.remove(), 1000);
+    }, 1200);
+  }
+
+  /* --- Fortschritt: n von total als Sternchen-Reihe --- */
+  function starRowHtml(n, total) {
+    let h = '<span class="stars-row">';
+    for (let i = 0; i < total; i++) h += `<span class="icon">${Art.star(i < n)}</span>`;
+    return h + '</span>';
   }
 
   /* --- Hauptmenü --- */
@@ -55,11 +93,13 @@ const UI = (() => {
     const hub = document.createElement('div');
     hub.className = 'screen hub';
     hub.innerHTML = `
+      ${Art.meadowScene({ sunPos: 'left' })}
       <div class="hub-topbar">
-        <div class="star-counter">⭐ <span id="total-stars">${Storage.totalStars()}</span></div>
-        <button class="btn-round" id="mute-btn">${Sound.isMuted() ? '🔇' : '🔊'}</button>
+        <div class="star-counter"><span class="icon">${Art.star(true)}</span><span id="total-stars">${Storage.totalStars()}</span></div>
+        <button class="btn-round" id="mute-btn"><span class="icon">${Art.speaker(!Sound.isMuted())}</span></button>
       </div>
-      <div class="hub-title">🌈 Bennets Spielewelt 🌈</div>
+      <div class="hub-title">Bennets Spielewelt</div>
+      <div class="hub-subtitle">Such dir ein Spiel aus!</div>
       <div class="tile-grid"></div>
     `;
     const grid = hub.querySelector('.tile-grid');
@@ -68,15 +108,20 @@ const UI = (() => {
       if (!g) return;
       const tile = document.createElement('button');
       tile.className = 'game-tile ' + g.tileClass;
-      const n = stars[id] || 0;
-      const starRow = n > 0 ? '⭐'.repeat(Math.min(n, 5)) + (n > 5 ? '+' : '') : '';
-      tile.innerHTML = `<span>${g.icon}</span><span class="tile-label">${g.title}</span><span class="tile-stars">${starRow}</span>`;
+      const n = Math.min(stars[id] || 0, 5);
+      let starRow = '';
+      for (let i = 0; i < n; i++) starRow += `<span class="icon">${Art.star(true)}</span>`;
+      tile.innerHTML = `
+        <span class="tile-art">${TILE_ART[id]()}</span>
+        <span class="tile-label">${g.title}</span>
+        <span class="tile-stars">${starRow}</span>`;
       tile.addEventListener('pointerdown', () => { Sound.play('pop'); startGame(id); });
       grid.appendChild(tile);
     });
     hub.querySelector('#mute-btn').addEventListener('pointerdown', (e) => {
+      const btn = e.currentTarget;
       const m = Sound.toggleMute();
-      e.currentTarget.textContent = m ? '🔇' : '🔊';
+      btn.querySelector('.icon').innerHTML = Art.speaker(!m);
       if (!m) Sound.play('pop');
     });
     app.appendChild(hub);
@@ -93,7 +138,7 @@ const UI = (() => {
     screen.innerHTML = `
       <div class="game-stage"></div>
       <div class="game-topbar">
-        <button class="btn-round" id="home-btn">🏠</button>
+        <button class="btn-round" id="home-btn"><span class="icon">${Art.home()}</span></button>
         <div class="game-progress"><span id="progress-icons"></span></div>
       </div>
     `;
@@ -104,8 +149,9 @@ const UI = (() => {
     });
     const stage = screen.querySelector('.game-stage');
     const api = {
-      burst: (x, y, emojis, count, size) => burst(screen, x, y, emojis, count, size),
+      burst: (x, y, kinds, count, size) => burst(screen, x, y, kinds, count, size),
       awardStar: () => awardStar(id),
+      starRow: starRowHtml,
       setProgress(html) {
         const el = screen.querySelector('#progress-icons');
         if (el) el.innerHTML = html;

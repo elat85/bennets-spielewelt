@@ -3,44 +3,51 @@
    8 neue Sachen platziert = 1 Stern. */
 (window.GameModules = window.GameModules || {}).garten = {
   title: 'Garten dekorieren',
-  icon: '🌷',
   tileClass: 'tile-garten',
 
   start(stage, api) {
-    stage.style.background = 'linear-gradient(180deg, #90caf9 0%, #cfe9ff 38%, #aed581 38%, #7cb342 100%)';
+    stage.style.background = 'linear-gradient(180deg, #6ec3f5 0%, #b5e3ff 36%, #93cf62 36%, #7ec850 100%)';
+    stage.innerHTML = `
+      <div class="art-layer" style="position:absolute; inset:0; pointer-events:none; z-index:0;">
+        <div style="position:absolute; left:3%; top:3%; width:clamp(80px,12vw,130px); aspect-ratio:1;">${Art.sun()}</div>
+        <div style="position:absolute; top:6%; width:clamp(90px,14vw,160px); aspect-ratio:16/9; animation:float-cloud 48s linear infinite;">${Art.cloud()}</div>
+        <div style="position:absolute; top:15%; width:clamp(70px,10vw,120px); aspect-ratio:16/9; animation:float-cloud 66s linear infinite; animation-delay:-25s; opacity:.85;">${Art.cloud()}</div>
+        <div style="position:absolute; left:0; right:0; bottom:56%; height:14%;">${Art.hills('#a8d878', 0)}</div>
+      </div>`;
 
-    const ITEMS = ['🌷', '🌻', '🌼', '🌹', '🌳', '🌲', '🍄', '⛲', '🦆', '🦋', '🐝', '🪨', '🏠', '🧚'];
+    const KINDS = Object.keys(Art.garden);
+    const BASE_SIZE = {
+      tulpe: 64, sonnenblume: 72, gaensebluemchen: 60, baum: 120, tanne: 110, pilz: 62,
+      brunnen: 96, ente: 60, schmetterling: 56, biene: 48, stein: 64, vogelhaus: 92
+    };
     let placedThisRound = 0;
     const GOAL = 8;
-    let saved = Storage.get('garten.items', []);
+    let saved = Storage.get('garten.items', []).filter(i => Art.garden[i.kind]);
 
     function updateProgress() {
-      api.setProgress(`🌷 ${placedThisRound} / ${GOAL}`);
+      api.setProgress(`<span class="icon" style="width:1.2em; height:1.5em;">${Art.garden.tulpe()}</span>&nbsp;${placedThisRound} / ${GOAL}`);
     }
     updateProgress();
 
-    // Sonne + Wolke als feste Deko
-    stage.innerHTML += `
-      <div class="sprite" style="left:5%; top:4%; font-size:64px;">🌞</div>
-      <div class="sprite" style="top:8%; font-size:54px; animation:float-cloud 45s linear infinite;">☁️</div>`;
-
     // Mülleimer
     const trash = document.createElement('div');
-    trash.textContent = '🗑️';
-    trash.style.cssText = `position:absolute; right:14px; bottom:96px; font-size:56px; z-index:40;
-      filter:grayscale(.2); transition:transform .15s;`;
+    trash.innerHTML = Art.trashcan();
+    trash.style.cssText = `position:absolute; right:14px; bottom:110px; width:clamp(52px,8vw,72px);
+      aspect-ratio:60/70; z-index:40; transition:transform .15s; filter:drop-shadow(0 4px 5px rgba(0,0,0,.25));`;
     stage.appendChild(trash);
 
-    // Item-Leiste
+    // Item-Leiste (Holzregal)
     const bar = document.createElement('div');
-    bar.style.cssText = `position:absolute; left:0; right:0; bottom:0; display:flex; gap:6px;
-      overflow-x:auto; padding:10px 12px; background:rgba(255,255,255,.85); z-index:30;
-      touch-action:pan-x; box-shadow:0 -3px 10px rgba(0,0,0,.12);`;
-    ITEMS.forEach(em => {
+    bar.style.cssText = `position:absolute; left:0; right:0; bottom:0; display:flex; gap:8px; align-items:flex-end;
+      overflow-x:auto; padding:10px 14px; z-index:30; touch-action:pan-x;
+      background:linear-gradient(180deg,#a5784e,#8d6748); border-top:4px solid #6b4b3a;
+      box-shadow:inset 0 3px 0 rgba(255,255,255,.2), 0 -6px 14px rgba(0,0,0,.18);`;
+    KINDS.forEach(kind => {
       const b = document.createElement('div');
-      b.textContent = em;
-      b.style.cssText = 'font-size:46px; line-height:1; padding:4px; cursor:grab; touch-action:none; flex:0 0 auto;';
-      b.addEventListener('pointerdown', e => startDrag(e, em, null));
+      b.innerHTML = Art.garden[kind]();
+      b.style.cssText = `width:clamp(48px,7vw,66px); height:clamp(48px,7vw,66px); padding:2px;
+        cursor:grab; touch-action:none; flex:0 0 auto; filter:drop-shadow(0 2px 3px rgba(0,0,0,.3));`;
+      b.addEventListener('pointerdown', e => startDrag(e, kind, null));
       bar.appendChild(b);
     });
     stage.appendChild(bar);
@@ -49,11 +56,12 @@
     function spawnSprite(item) {
       const el = document.createElement('div');
       el.className = 'sprite tappable';
-      el.textContent = item.emoji;
-      el.style.fontSize = item.size + 'px';
-      el.style.zIndex = Math.floor(item.y * 10) + 10;
-      el.style.transform = `translate(${item.x * stage.clientWidth - item.size / 2}px, ${item.y * stage.clientHeight}px)`;
-      el.addEventListener('pointerdown', e => startDrag(e, item.emoji, item));
+      el.innerHTML = Art.garden[item.kind]();
+      el.style.width = el.style.height = item.size + 'px';
+      el.style.zIndex = Math.floor(item.y * 100) + 10;
+      el.style.filter = 'drop-shadow(0 4px 4px rgba(20,50,10,.25))';
+      el.style.transform = `translate(${item.x * stage.clientWidth - item.size / 2}px, ${item.y * stage.clientHeight - item.size}px)`;
+      el.addEventListener('pointerdown', e => startDrag(e, item.kind, item));
       stage.appendChild(el);
       item.el = el;
       return item;
@@ -61,19 +69,20 @@
     saved.forEach(spawnSprite);
 
     function persist() {
-      Storage.set('garten.items', saved.map(({ emoji, x, y, size }) => ({ emoji, x, y, size })));
+      Storage.set('garten.items', saved.map(({ kind, x, y, size }) => ({ kind, x, y, size })));
     }
 
     /* Drag: neues Item aus der Leiste oder bestehendes verschieben */
     let drag = null;
-    function startDrag(e, emoji, existing) {
+    function startDrag(e, kind, existing) {
       e.preventDefault();
       e.stopPropagation();
       if (drag) return;
       Sound.play('tap');
       let item = existing;
       if (!item) {
-        item = spawnSprite({ emoji, x: 0.5, y: 0.5, size: 40 + Math.floor(Math.random() * 24) });
+        const base = BASE_SIZE[kind] || 64;
+        item = spawnSprite({ kind, x: 0.5, y: 0.6, size: Math.round(base * (0.9 + Math.random() * 0.3)) });
         saved.push(item);
         item.isNew = true;
       }
@@ -86,12 +95,12 @@
       const r = stage.getBoundingClientRect();
       const x = e.clientX - r.left, y = e.clientY - r.top;
       drag.x = Math.min(Math.max(x / r.width, 0.02), 0.98);
-      drag.y = Math.min(Math.max((y - 20) / r.height, 0.30), 0.88);
-      drag.el.style.transform = `translate(${drag.x * r.width - drag.size / 2}px, ${drag.y * r.height}px)`;
+      drag.y = Math.min(Math.max(y / r.height, 0.36), 0.86);
+      drag.el.style.transform = `translate(${drag.x * r.width - drag.size / 2}px, ${drag.y * r.height - drag.size}px)`;
       // Mülleimer-Feedback
       const t = trash.getBoundingClientRect();
-      const overTrash = e.clientX > t.left - 20 && e.clientX < t.right + 20 && e.clientY > t.top - 20 && e.clientY < t.bottom + 20;
-      trash.style.transform = overTrash ? 'scale(1.35) rotate(-8deg)' : '';
+      const overTrash = e.clientX > t.left - 24 && e.clientX < t.right + 24 && e.clientY > t.top - 24 && e.clientY < t.bottom + 24;
+      trash.style.transform = overTrash ? 'scale(1.3) rotate(-8deg)' : '';
       drag.overTrash = overTrash;
     }
     function onMove(e) { moveTo(e); }
@@ -100,13 +109,13 @@
       const r = stage.getBoundingClientRect();
       if (drag.overTrash) {
         Sound.play('whoosh');
-        api.burst(drag.x * r.width, drag.y * r.height, ['💨', '✨'], 6, 22);
+        api.burst(drag.x * r.width, drag.y * r.height - 30, ['puff', 'sparkle'], 6, 24);
         drag.el.remove();
         saved = saved.filter(i => i !== drag);
       } else {
         Sound.play('pop');
-        drag.el.style.zIndex = Math.floor(drag.y * 10) + 10;
-        api.burst(drag.x * r.width, drag.y * r.height + 20, ['✨'], 4, 16);
+        drag.el.style.zIndex = Math.floor(drag.y * 100) + 10;
+        api.burst(drag.x * r.width, drag.y * r.height - drag.size / 3, ['sparkle'], 4, 16);
         if (drag.isNew) {
           drag.isNew = false;
           placedThisRound++;

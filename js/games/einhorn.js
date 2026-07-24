@@ -3,11 +3,15 @@
    einer kleinen Galerie. Alles ausgemalt = 1 Stern. */
 (window.GameModules = window.GameModules || {}).einhorn = {
   title: 'Einhorn anmalen',
-  icon: '🦄',
   tileClass: 'tile-einhorn',
 
   start(stage, api) {
-    stage.style.background = 'linear-gradient(180deg, #fce4ec 0%, #f8bbd0 100%)';
+    stage.style.background = 'linear-gradient(180deg, #ffd9ec 0%, #f8bbd0 100%)';
+    stage.innerHTML = `
+      <div class="art-layer" style="position:absolute; inset:0; pointer-events:none; z-index:0;">
+        <div style="position:absolute; top:5%; width:clamp(80px,12vw,140px); aspect-ratio:16/9; opacity:.8; animation:float-cloud 55s linear infinite;">${Art.cloud()}</div>
+        <div style="position:absolute; top:64%; width:clamp(60px,9vw,110px); aspect-ratio:16/9; opacity:.6; animation:float-cloud 75s linear infinite; animation-delay:-40s;">${Art.cloud()}</div>
+      </div>`;
 
     const COLORS = {
       rot:     '#ff5252', orange:  '#ffa726', gelb:   '#ffee58',
@@ -89,7 +93,7 @@
         box-shadow:0 4px 10px rgba(0,0,0,.2); z-index:30; max-width:96vw; flex-wrap:wrap; justify-content:center;"></div>
       <div id="eh-gallery" style="position:absolute; left:8px; top:50%; transform:translateY(-50%);
         display:flex; flex-direction:column; gap:8px; z-index:30;"></div>
-      <button id="eh-new" class="btn-round" style="position:absolute; right:12px; bottom:14px; z-index:30;">🔄</button>`;
+      <button id="eh-new" class="btn-round" style="position:absolute; right:12px; bottom:14px; z-index:30;"><span class="icon">${Art.reset()}</span></button>`;
 
     const canvas = stage.querySelector('#eh-canvas');
     const palette = stage.querySelector('#eh-palette');
@@ -102,7 +106,7 @@
 
     function updateProgress() {
       const done = REGIONS.filter(r => fills[r]).length;
-      api.setProgress(`🎨 ${done} / ${REGIONS.length}`);
+      api.setProgress(`<span class="icon" style="width:1.2em; height:1.2em;">${Art.particles.sparkle}</span>&nbsp;${done} / ${REGIONS.length}`);
     }
     updateProgress();
 
@@ -112,7 +116,7 @@
       b.style.cssText = `width:clamp(40px,6vw,56px); height:clamp(40px,6vw,56px); border-radius:50%;
         border:4px solid #fff; outline:3px solid rgba(0,0,0,.12); cursor:pointer;
         background:${bg}; font-size:24px; transition:transform .1s;`;
-      if (label) b.textContent = label;
+      if (label) b.innerHTML = label;
       b.addEventListener('pointerdown', () => {
         Sound.play('tap');
         tool = value;
@@ -124,7 +128,7 @@
     }
     Object.values(COLORS).forEach(c => makeSwatch(c, c));
     makeSwatch('conic-gradient(#ff5252,#ffa726,#ffee58,#66bb6a,#4fc3f7,#ab47bc,#ff5252)', 'rainbow');
-    const glitterBtn = makeSwatch('#fff8e1', 'glitter', '✨');
+    const glitterBtn = makeSwatch('#fff8e1', 'glitter', `<span style="display:block; width:70%; height:70%; margin:15% auto;">${Art.particles.sparkle}</span>`);
     palette.children[7].dispatchEvent(new Event('pointerdown')); // Pink vorauswählen
 
     /* Malen: Tap-to-Fill bzw. Glitzer streuen */
@@ -133,7 +137,7 @@
       if (tool === 'glitter') {
         const r = stage.getBoundingClientRect();
         Sound.play('sparkle');
-        api.burst(e.clientX - r.left, e.clientY - r.top, ['✨', '💖', '⭐'], 5, 20);
+        api.burst(e.clientX - r.left, e.clientY - r.top, ['sparkle', 'heart'], 5, 20);
         return;
       }
       if (!target) return;
