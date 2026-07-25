@@ -26,31 +26,11 @@
     }
     updateProgress();
 
-    // Dinos aufstellen
-    dinos.forEach((d, i) => {
-      const wrap = document.createElement('div');
-      wrap.className = 'sprite';
-      wrap.style.left = `calc(${d.x * 100}% - clamp(70px, 11vw, 110px))`;
-      wrap.style.top = '38%'; // Füße auf der Graslinie der Szene
-      wrap.style.width = 'clamp(140px, 22vw, 220px)';
-      wrap.style.textAlign = 'center';
-      wrap.innerHTML = `
-        <div class="dino-bubble anim-float" style="width:clamp(44px,6vw,60px); height:clamp(44px,6vw,60px);
-          background:linear-gradient(180deg,#ffffff,#f0ead9); border:3px solid rgba(0,0,0,.1); border-radius:50%;
-          padding:7px; display:inline-block; margin-bottom:2px; box-shadow:0 4px 8px rgba(0,0,0,.15);
-          animation-delay:${i * 0.4}s;">${d.bubble}</div>
-        <div class="dino-body anim-breathe" style="width:100%; aspect-ratio:1; animation-delay:${i * 0.5}s;">${Art.charImg(d.img + '-1.webp')}</div>
-        <div class="char-shadow" style="left:15%; right:15%; height:14px; bottom:-6px;"></div>`;
-      stage.appendChild(wrap);
-      d.el = wrap;
-      d.body = wrap.querySelector('.dino-body');
-    });
-
-    // Futter-Tablett (Holz)
+    // Futter-Tablett (Holz) — zuerst, weil die Dinos darueber gestellt werden
     const tray = document.createElement('div');
-    tray.style.cssText = `position:absolute; left:50%; bottom:10px; transform:translateX(-50%);
+    tray.style.cssText = `position:absolute; left:50%; bottom:8px; transform:translateX(-50%);
       background:linear-gradient(180deg,#a5784e,#8d6748); border:3px solid #6b4b3a; border-radius:22px;
-      padding:10px 18px; display:flex; gap:14px; z-index:20;
+      padding:8px 14px; display:flex; gap:clamp(6px,1.6vmin,14px); z-index:20;
       box-shadow:inset 0 3px 0 rgba(255,255,255,.25), 0 6px 0 #5a4030, 0 12px 18px rgba(0,0,0,.3);`;
     stage.appendChild(tray);
 
@@ -59,12 +39,52 @@
       const item = document.createElement('div');
       item.dataset.food = key;
       item.innerHTML = Art.foods[key]();
-      item.style.cssText = `width:clamp(46px,7vw,64px); height:clamp(46px,7vw,64px);
+      item.style.cssText = `width:clamp(36px,9vmin,64px); height:clamp(36px,9vmin,64px);
         cursor:grab; touch-action:none; filter:drop-shadow(0 3px 3px rgba(0,0,0,.25)); transition:transform .12s;`;
       item.addEventListener('pointerdown', onFoodGrab);
       return item;
     }
     for (let i = 0; i < 5; i++) tray.appendChild(makeFoodItem());
+
+    /* Dinos aufstellen — Groesse und Standlinie kommen aus dem Szenenbild
+       (Graslinie liegt bei 0,76, die Wiese reicht bis 1,0), nicht aus festen
+       Buehnen-Prozenten. Sonst stehen sie je nach Seitenverhaeltnis in der
+       Luft oder mit den Fuessen unterhalb des Bildschirmrands. */
+    const FEET_IN_SCENE = 0.93;   // Standlinie im Bild
+    function layoutDinos() {
+      const g = Art.sceneGeom(stage, 1);            // object-position: center bottom
+      const trayTop = g.h - tray.offsetHeight - 12;
+      const feet = Math.min(g.y(FEET_IN_SCENE), trayTop);
+      // Gesamthoehe nie groesser als der Platz ueber der Standlinie
+      const total = Math.min(g.len(0.33), feet * 0.92);
+      const body = total * 0.74, bubble = total * 0.24;
+      dinos.forEach(d => {
+        d.el.style.left = g.x(d.x) + 'px';
+        d.el.style.top = (feet - total) + 'px';
+        d.el.style.width = body + 'px';
+        d.el.style.marginLeft = (-body / 2) + 'px';
+        d.el.querySelector('.dino-bubble').style.cssText += `;width:${bubble}px; height:${bubble}px;`;
+        d.body.style.height = body + 'px';
+      });
+    }
+
+    dinos.forEach((d, i) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'sprite';
+      wrap.style.textAlign = 'center';
+      wrap.innerHTML = `
+        <div class="dino-bubble anim-float" style="
+          background:linear-gradient(180deg,#ffffff,#f0ead9); border:3px solid rgba(0,0,0,.1); border-radius:50%;
+          padding:6px; display:inline-block; margin-bottom:2px; box-shadow:0 4px 8px rgba(0,0,0,.15);
+          animation-delay:${i * 0.4}s;">${d.bubble}</div>
+        <div class="dino-body anim-breathe" style="width:100%; aspect-ratio:1; animation-delay:${i * 0.5}s;">${Art.charImg(d.img + '-1.webp')}</div>
+        <div class="char-shadow" style="left:15%; right:15%; height:14px; bottom:-6px;"></div>`;
+      stage.appendChild(wrap);
+      d.el = wrap;
+      d.body = wrap.querySelector('.dino-body');
+    });
+    layoutDinos();
+    window.addEventListener('resize', layoutDinos);
 
     // Drag & Drop mit Pointer Events
     let drag = null;
@@ -141,6 +161,7 @@
     return () => {
       stage.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('resize', layoutDinos);
     };
   }
 };

@@ -16,7 +16,35 @@
 
     const W = () => stage.clientWidth;
     const H = () => stage.clientHeight;
-    const GROUND_TOP = 0.55; // Hühner laufen nur auf der Wiese (unterhalb des Zauns)
+
+    /* Die Wiese beginnt im Szenenbild bei 0,60 (im Bild nachgemessen). Wo diese
+       Linie auf der Bühne landet, hängt vom Seitenverhältnis ab: vorher stand
+       hier 0.55 relativ zur BÜHNE, die echte Wiesenkante lag auf einem
+       2,17:1-Handy aber bei 80 % — die Hühner liefen im Zaun und teilweise
+       unterhalb des Bildschirmrands.
+
+       Zwei Schritte: Szene so ausrichten, dass die Wiesenkante überall auf
+       45 % der Bühnenhöhe sitzt, und danach alle Positionen aus der
+       Szenen-Geometrie statt aus Bühnen-Prozenten rechnen. */
+    const MEADOW_IN_SCENE = 0.60;
+    const MEADOW_ON_STAGE = 0.45;
+    const anchor = () => Art.sceneAnchor(stage, MEADOW_IN_SCENE, MEADOW_ON_STAGE);
+    function applyAnchor() {
+      const img = stage.querySelector('.scene-layer img');
+      if (img) img.style.objectPosition = `center ${(anchor() * 100).toFixed(1)}%`;
+    }
+    applyAnchor();
+    window.addEventListener('resize', applyAnchor);
+
+    const geom = () => Art.sceneGeom(stage, anchor());
+    const chickenSize = () => geom().len(0.075);
+    const groundTop = () => Math.max(geom().y(MEADOW_IN_SCENE), 0);
+    // Untergrenze so, dass das ganze Huhn sichtbar bleibt
+    const groundBottom = () => H() - chickenSize() * 1.15;
+    const randY = () => {
+      const a = groundTop(), b = groundBottom();
+      return b > a ? a + Math.random() * (b - a) : Math.max(0, b);
+    };
 
     function updateProgress() {
       api.setProgress(`<span class="icon" style="width:1.1em; height:1.3em;">${Art.egg()}</span>&nbsp;${eggs} / 3`);
@@ -24,7 +52,7 @@
     updateProgress();
 
     function makeChicken(i) {
-      const size = 66 + Math.floor(Math.random() * 14);
+      const size = Math.round(chickenSize() * (0.92 + Math.random() * 0.2));
       const shadow = document.createElement('div');
       shadow.className = 'char-shadow';
       shadow.style.width = size * 0.8 + 'px';
@@ -39,8 +67,8 @@
       stage.appendChild(el);
       return {
         el, img: el.querySelector('img'), frame: 1, shadow, size,
-        x: Math.random() * (W() - 100) + 20,
-        y: (GROUND_TOP + Math.random() * (1 - GROUND_TOP - 0.14)) * H(),
+        x: Math.random() * Math.max(W() - size - 40, 40) + 20,
+        y: randY(),
         tx: 0, ty: 0,
         speed: 90 + Math.random() * 50,
         state: 'wander',
@@ -54,16 +82,17 @@
     chickens.forEach(c => pickWanderTarget(c));
 
     function pickWanderTarget(c) {
-      c.tx = Math.random() * (W() - 100) + 20;
-      c.ty = (GROUND_TOP + Math.random() * (1 - GROUND_TOP - 0.14)) * H();
+      c.tx = Math.random() * Math.max(W() - c.size - 40, 40) + 20;
+      c.ty = randY();
     }
 
     // Körner streuen
     function onTap(e) {
       const r = stage.getBoundingClientRect();
       const x = e.clientX - r.left, y = e.clientY - r.top;
-      if (y < GROUND_TOP * H() - 20) return; // nur auf der Wiese
+      if (y < groundTop() - 20) return; // nur auf der Wiese
       Sound.play('pop');
+      const cs = Math.round(chickenSize() * 0.46); // Korn passend zur Huhngröße
       const n = 5 + Math.floor(Math.random() * 3);
       for (let i = 0; i < n; i++) {
         const corn = document.createElement('div');
@@ -71,9 +100,9 @@
         // Aufplopp-Animation auf einem INNEREN Element, sonst überschreibt
         // sie das translate() der Positionierung (Sprite klebt oben links)
         corn.innerHTML = `<div class="anim-pop" style="width:100%; height:100%; filter:drop-shadow(0 2px 2px rgba(0,0,0,.35));">${Art.corn()}</div>`;
-        corn.style.width = corn.style.height = '32px';
-        const cx = Math.min(Math.max(x + (Math.random() - 0.5) * 110, 10), W() - 34);
-        const cy = Math.min(Math.max(y + (Math.random() - 0.5) * 70, GROUND_TOP * H()), H() - 36);
+        corn.style.width = corn.style.height = cs + 'px';
+        const cx = Math.min(Math.max(x + (Math.random() - 0.5) * 110, 10), W() - cs - 4);
+        const cy = Math.min(Math.max(y + (Math.random() - 0.5) * 70, groundTop()), H() - cs - 6);
         corn.style.transform = `translate(${cx}px, ${cy}px)`;
         stage.appendChild(corn);
         corns.push({ el: corn, x: cx, y: cy, claimed: false });
@@ -85,10 +114,13 @@
       const egg = document.createElement('div');
       egg.className = 'sprite tappable';
       egg.innerHTML = `<div class="anim-pop" style="width:100%; height:100%; filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));">${Art.egg()}</div>`;
-      egg.style.width = '40px';
-      egg.style.height = '46px';
+      const ew = Math.round(chickenSize() * 0.56);
+      egg.style.width = ew + 'px';
+      egg.style.height = Math.round(ew * 1.15) + 'px';
       egg.style.zIndex = 5;
-      egg.style.transform = `translate(${x}px, ${y + 14}px)`;
+      // innerhalb der Bühne halten, sonst liegt das Ei halb unter dem Rand
+      const ey = Math.min(y + 14, H() - ew * 1.15 - 4);
+      egg.style.transform = `translate(${Math.min(x, W() - ew - 4)}px, ${ey}px)`;
       stage.appendChild(egg);
       Sound.play('pop');
       egg.addEventListener('pointerdown', (e) => {
@@ -196,6 +228,7 @@
       running = false;
       cancelAnimationFrame(raf);
       stage.removeEventListener('pointerdown', onTap);
+      window.removeEventListener('resize', applyAnchor);
     };
   }
 };

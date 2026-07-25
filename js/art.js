@@ -630,6 +630,41 @@ const Art = (() => {
   function scene(src, pos = 'center') {
     return `<div class="scene-layer"><img src="${src}" alt="" style="object-position:${pos};"></div>`;
   }
+
+  /* Szenen-Geometrie: rechnet Bildkoordinaten (0..1) in Buehnen-Pixel um.
+
+     Noetig, weil alle Szenen quadratisch sind (1024x1024) und per
+     object-fit:cover eingepasst werden. Je flacher der Bildschirm, desto mehr
+     wird oben/unten weggeschnitten: auf einem 2,17:1-Handy sind nur 46 % der
+     Bildhoehe sichtbar, auf einem 1,6:1-Tablet 62 %. Eine feste Prozentangabe
+     relativ zur Buehne liegt deshalb auf jedem Geraet an einer anderen Stelle
+     des Bildes — Figuren schweben dann ueber der Wiese oder stehen halb
+     ausserhalb. Positionen gehoeren darum ins Bild-Koordinatensystem.
+
+     anchorY passt zu object-position: 0 = top, 0.5 = center, 1 = bottom. */
+  /* Waehlt object-position so, dass ein Merkmal des Bildes (etwa die
+     Wiesenkante bei 0,60) auf jedem Seitenverhaeltnis an derselben Stelle der
+     Buehne landet. Mit fester Ausrichtung 'center' liegt die Wiesenkante der
+     Huehner-Szene auf einem 2,17:1-Handy bei 80 % der Buehnenhoehe — es bleibt
+     fast keine Wiese zum Spielen. Der Preis: auf sehr flachen Schirmen wird
+     oben mehr weggeschnitten (Himmel, Scheunendach). */
+  function sceneAnchor(stage, featureY, targetY) {
+    const w = stage.clientWidth, h = stage.clientHeight, s = Math.max(w, h);
+    if (h >= s) return 0.5;                       // kein vertikaler Beschnitt
+    return Math.min(1, Math.max(0, (targetY * h - featureY * s) / (h - s)));
+  }
+
+  function sceneGeom(stage, anchorY = 0.5) {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    const s = Math.max(w, h);              // gerenderte Kantenlaenge (Bild ist 1:1)
+    const ox = (w - s) / 2, oy = (h - s) * anchorY;
+    return {
+      w, h, size: s,
+      x: fx => ox + fx * s,                // Bild-x -> Buehnen-px
+      y: fy => oy + fy * s,                // Bild-y -> Buehnen-px
+      len: f => f * s                      // Bild-Laenge -> Buehnen-px
+    };
+  }
   function charImg(src) {
     return `<img class="char-img" src="${src}" alt="" draggable="false">`;
   }
@@ -647,7 +682,7 @@ const Art = (() => {
 
   return {
     sun, cloud, hills, grassTuft, flowerSmall, tree, pine, bush, fence, barn, volcano, palm,
-    meadowScene, scene, charImg,
+    meadowScene, scene, sceneGeom, sceneAnchor, charImg,
     chicken, corn, egg, dinoRex, dinoBronto, dinoDragon, kid, plush, pillow,
     foods, garden,
     sofa, bed, chair, toybox, basket, windowArt, picture,

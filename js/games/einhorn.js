@@ -479,24 +479,34 @@
     }
 
     /* ---------- Stifte-Box ---------- */
+    /* 24 Stifte passen auf einem Handy nicht nebeneinander. Das Body-weite
+       touch-action:none verhindert aber das Wischen in der Box — die hinteren
+       Stifte waren dadurch unerreichbar. pan-x gibt das Wischen frei; die
+       Auswahl hängt deshalb an 'click' und nicht an 'pointerdown', sonst
+       wählt jede Wischgeste sofort einen Stift aus. */
+    box.style.touchAction = 'pan-x';
+    const pens = [];
     function makePen(html, onSelect) {
       const b = document.createElement('button');
-      b.style.cssText = `width:clamp(30px,4.4vw,44px); height:clamp(80px,12vw,118px); border:none;
-        background:none; padding:0; cursor:pointer; flex:0 0 auto;
+      b.style.cssText = `width:clamp(26px,9vmin,44px); height:clamp(66px,24vmin,118px); border:none;
+        background:none; padding:0; cursor:pointer; flex:0 0 auto; touch-action:pan-x;
         transition:transform .12s; transform:translateY(24%); filter:drop-shadow(0 2px 2px rgba(0,0,0,.3));`;
       b.innerHTML = html;
-      b.addEventListener('pointerdown', () => {
-        Sound.play('tap');
+      const select = (quiet) => {
+        if (!quiet) Sound.play('tap');
         onSelect();
-        [...box.children].forEach(c => c.style.transform = 'translateY(24%)');
+        pens.forEach(p => p.el.style.transform = 'translateY(24%)');
         b.style.transform = 'translateY(2%) scale(1.08)';
-      });
+      };
+      b.addEventListener('click', () => select(false));
       box.appendChild(b);
-      return b;
+      const pen = { el: b, select };
+      pens.push(pen);
+      return pen;
     }
     PENCILS.forEach(c => makePen(pencilSvg(c), () => { tool = { type: 'fill', color: c }; lastColor = c; }));
     TOOL_PENS.forEach(t => makePen(t.make(), () => { tool = { type: t.key }; }));
-    box.children[10].dispatchEvent(new PointerEvent('pointerdown')); // Pink vorauswählen
+    pens[10].select(true); // Pink vorauswählen, ohne Klickgeräusch
 
     /* ---------- Galerie ---------- */
     function saveToGallery() {
@@ -554,7 +564,11 @@
       card.style.cssText = `background:#fff; border:4px solid #f48fb1; border-radius:18px; padding:6px;
         cursor:pointer; box-shadow:0 5px 0 #d6688e, 0 9px 14px rgba(0,0,0,.18); transition:transform .12s;`;
       card.innerHTML = `<img src="${m.file}" loading="lazy" style="width:100%; display:block; border-radius:12px;">`;
-      card.addEventListener('pointerdown', () => {
+      /* Bewusst 'click' statt 'pointerdown': die Auswahl ist scrollbar, und
+         pointerdown feuert schon beim Berühren — jede Wischgeste hat sofort
+         ein Bild geöffnet. 'click' unterdrückt der Browser, wenn aus der
+         Berührung ein Scrollen wird. */
+      card.addEventListener('click', () => {
         Sound.play('pop');
         chooser.style.display = 'none';
         openMotif(m);
