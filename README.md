@@ -39,9 +39,11 @@ für den Offline-Betrieb speichert. Tablet am besten quer halten.
 ## Technik
 
 Reines HTML/CSS/JavaScript ohne Build-System. PWA mit Service Worker
-(offline-fähig, stale-while-revalidate). Sounds werden per Web Audio API
-synthetisiert, Grafiken sind SVG/Emoji — keine externen Ressourcen, keine
-Abhängigkeiten.
+(offline-fähig, stale-while-revalidate). UI-Sounds aus dem
+[Kenney Interface-Sounds-Pack](https://kenney.nl/assets/interface-sounds)
+(CC0/Public Domain), Charakter-Sounds per Web Audio API synthetisiert,
+Grafiken sind SVG + KI-generierte Ausmalbilder — keine externen Ressourcen
+zur Laufzeit, keine Abhängigkeiten.
 
 Lokal starten: `python serve.py` (Dev-Server ohne Caching), dann
 http://localhost:8642 öffnen.

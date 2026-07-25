@@ -113,10 +113,42 @@ const Sound = (() => {
     musicTimer = null;
   }
 
+  /* --- Echte Sound-Dateien (Kenney Interface Sounds, CC0) mit Synth-Fallback --- */
+  const FILES = { tap: 'sounds/tap.ogg', pop: 'sounds/pop.ogg', ding: 'sounds/ding.ogg', wrong: 'sounds/wrong.ogg' };
+  const buffers = {};
+  let filesRequested = false;
+  function loadFiles() {
+    if (filesRequested) return;
+    filesRequested = true;
+    const c = ac();
+    Object.entries(FILES).forEach(([key, url]) =>
+      fetch(url)
+        .then(r => r.arrayBuffer())
+        .then(b => c.decodeAudioData(b))
+        .then(buf => { buffers[key] = buf; })
+        .catch(() => {}) // Datei fehlt/Format nicht abspielbar -> Synth bleibt
+    );
+  }
+  function playBuffer(name) {
+    const buf = buffers[name];
+    if (!buf) return false;
+    const c = ac();
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    const gain = c.createGain();
+    gain.gain.value = 0.4;
+    src.connect(gain).connect(c.destination);
+    src.start();
+    return true;
+  }
+
   return {
     play(name) {
       if (muted || !effects[name]) return;
-      try { effects[name](); } catch (e) { /* Audio darf nie das Spiel stoppen */ }
+      try {
+        loadFiles();
+        if (!playBuffer(name)) effects[name]();
+      } catch (e) { /* Audio darf nie das Spiel stoppen */ }
     },
     toggleMute() {
       muted = !muted;
