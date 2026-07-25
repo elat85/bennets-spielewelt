@@ -21,7 +21,9 @@
     stage.style.background = 'linear-gradient(180deg, #ffd9ec 0%, #f8bbd0 100%)';
 
     const PENCILS = ['#ff5252', '#ff7043', '#ffa726', '#ffee58', '#d4e157', '#66bb6a',
-                     '#26a69a', '#4fc3f7', '#5c6bc0', '#ab47bc', '#f48fb1', '#8d6e63', '#90a4ae'];
+                     '#26a69a', '#4fc3f7', '#5c6bc0', '#ab47bc', '#f48fb1',
+                     '#ffd8b5', '#e0ac7e', '#9c6b43', // Hauttöne hell/mittel/dunkel
+                     '#8d6e63', '#90a4ae'];
     const SIZE = 1024;
     let tool = { type: 'fill', color: '#f48fb1' };
     let lastColor = '#f48fb1';
@@ -130,8 +132,41 @@
 
     /* ---------- Motiv laden ---------- */
     const img = new Image();
+    let currentMotifId = null;
+
+    /* Angefangene Bilder überleben das Schließen: nach jedem Strich
+       automatisch pro Motiv speichern, beim Öffnen wiederherstellen */
+    let wipTimer = null;
+    const wipKey = () => 'einhorn.wip.' + currentMotifId;
+    function saveWip() {
+      try {
+        const thumb = document.createElement('canvas');
+        const ar = canvas.width / canvas.height;
+        thumb.width = 512; thumb.height = Math.round(512 / ar);
+        thumb.getContext('2d').drawImage(canvas, 0, 0, thumb.width, thumb.height);
+        Storage.set(wipKey(), thumb.toDataURL('image/jpeg', 0.8));
+      } catch (e) { /* Speicher voll – Autosave ist optional */ }
+    }
+    function scheduleWip() {
+      clearTimeout(wipTimer);
+      wipTimer = setTimeout(saveWip, 800);
+    }
+    function restoreWip() {
+      const wip = Storage.get(wipKey(), null);
+      if (!wip) return;
+      const li = new Image();
+      li.onload = () => {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(li, 0, 0, canvas.width, canvas.height);
+        updateProgress();
+      };
+      li.src = wip;
+    }
+
     function openMotif(motif) {
       ready = false;
+      currentMotifId = motif.id;
       img.onload = () => {
         const ar = img.naturalWidth / img.naturalHeight;
         canvas = document.createElement('canvas');
@@ -157,6 +192,7 @@
         resetZoom();
         resetCanvas(true);
         ready = true;
+        restoreWip();
         updateProgress();
       };
       img.src = motif.file;
@@ -364,18 +400,21 @@
         stampStar(x, y, 16 + Math.random() * 12);
         Sound.play('sparkle');
         api.burst(clientX - sr.left, clientY - sr.top, ['sparkle', 'heart'], 4, 20);
+        scheduleWip();
         return;
       }
       if (tool.type === 'stamp') {
         randomStamp(x, y);
         Sound.play('pop');
         api.burst(clientX - sr.left, clientY - sr.top, ['sparkle'], 3, 16);
+        scheduleWip();
         return;
       }
       const colorAt = fillColorAt();
       if (!colorAt) return;
       const samples = floodFill(x, y, colorAt);
       if (samples) {
+        scheduleWip();
         Sound.play(tool.type === 'magic' ? 'sparkle' : 'pop');
         if (tool.type === 'magic') {
           // ein paar Glitzersterne in die verzauberte Fläche
@@ -503,6 +542,8 @@
       Sound.play('whoosh');
       const frac = 1 - countWhite() / whiteAtStart;
       if (frac > 0.3 && !starGiven) saveToGallery(); // angefangenes Werk nicht verlieren
+      clearTimeout(wipTimer);
+      Storage.set(wipKey(), null); // Autosave verwerfen, wirklich neu anfangen
       resetCanvas(false);
     });
 
