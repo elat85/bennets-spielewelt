@@ -572,6 +572,21 @@ const Art = (() => {
       <path d="M34 6 L46 16 L32 24 Z" fill="#68b8e8"/>`);
   }
 
+  function lupe() {
+    return wrap('0 0 60 60', `
+      <circle cx="26" cy="26" r="15" fill="#cfe9f5" stroke="#3d85b8" stroke-width="6"/>
+      <line x1="37" y1="37" x2="52" y2="52" stroke="#3d85b8" stroke-width="8" stroke-linecap="round"/>
+      <line x1="19" y1="26" x2="33" y2="26" stroke="#3d85b8" stroke-width="5" stroke-linecap="round"/>`);
+  }
+
+  function lock() {
+    return wrap('0 0 60 60', `
+      <path d="M19 26 L19 19 Q19 8 30 8 Q41 8 41 19 L41 26" fill="none" stroke="#8494a8" stroke-width="7" stroke-linecap="round"/>
+      <rect x="12" y="25" width="36" height="28" rx="8" fill="#ffd93b" stroke="#e8a000" stroke-width="4"/>
+      <circle cx="30" cy="37" r="4.5" fill="#8a6c00"/>
+      <rect x="27.5" y="39" width="5" height="8" rx="2.5" fill="#8a6c00"/>`);
+  }
+
   /* Mini-Einhorn (Kopf) für Menü-Kachel und Sticker */
   function unicornMini() {
     return wrap('0 0 120 120', `
@@ -636,7 +651,7 @@ const Art = (() => {
     chicken, corn, egg, dinoRex, dinoBronto, dinoDragon, kid, plush, pillow,
     foods, garden,
     sofa, bed, chair, toybox, basket, windowArt, picture,
-    star, home, speaker, trashcan, reset, album, note, unicornMini, swingMini, trampolineMini,
+    star, home, speaker, trashcan, reset, album, note, lupe, lock, unicornMini, swingMini, trampolineMini,
     particles
   };
 })();

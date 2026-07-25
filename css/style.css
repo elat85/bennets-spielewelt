@@ -415,6 +415,83 @@ html, body {
   animation: pop-in .4s ease;
 }
 
+/* ===== Eltern-Gate (Kindersperre) ===== */
+.gate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  background: rgba(40, 30, 60, .78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: screen-in .25s ease-out;
+}
+.gate-box {
+  position: relative;
+  background: linear-gradient(180deg, #ffffff, #f3ecdc);
+  border-radius: 26px;
+  padding: clamp(16px, 3vh, 28px) clamp(20px, 4vw, 40px);
+  box-shadow: 0 10px 0 #c9bfa8, 0 20px 40px rgba(0,0,0,.4);
+  text-align: center;
+  max-width: min(92vw, 420px);
+}
+.gate-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  border: none;
+  background: none;
+  font-size: clamp(20px, 3vw, 26px);
+  color: #a89e8c;
+  cursor: pointer;
+  padding: 6px;
+}
+.gate-title {
+  font-size: clamp(17px, 2.6vw, 22px);
+  font-weight: 600;
+  color: #8a7a60;
+  margin-bottom: 4px;
+}
+.gate-task {
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700;
+  color: #463a52;
+}
+.gate-display {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 700;
+  color: #2c5a80;
+  background: #e8f2fa;
+  border-radius: 12px;
+  margin: 8px auto 12px;
+  padding: 4px 0;
+  width: min(60%, 160px);
+  min-height: 1.3em;
+}
+.gate-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(6px, 1.2vh, 10px);
+}
+.gate-key {
+  font-family: inherit;
+  font-size: clamp(20px, 3.4vw, 28px);
+  font-weight: 700;
+  color: #463a52;
+  background: linear-gradient(180deg, #ffffff, #e8e0cc);
+  border: 2px solid rgba(0,0,0,.1);
+  border-radius: 14px;
+  padding: clamp(6px, 1.4vh, 12px) 0;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #c9bfa8;
+}
+.gate-key:active { transform: translateY(2px); box-shadow: 0 1px 0 #c9bfa8; }
+.gate-ok {
+  background: linear-gradient(180deg, #7ac74f, #5aa53c);
+  color: #fff;
+  box-shadow: 0 3px 0 #47823a;
+}
+
 /* ===== Figuren-Leben: Blinzeln, Flügelschlag, Schwanzwedeln ===== */
 .art-blink {
   animation: art-blink 4.6s ease-in-out infinite;

@@ -155,6 +155,7 @@ const UI = (() => {
           </button>
         </div>
         <div style="display:flex; gap:10px;">
+          <button class="btn-round" id="lock-btn" style="opacity:.75;"><span class="icon">${Art.lock()}</span></button>
           <button class="btn-round" id="music-btn"><span class="icon">${Art.note(Sound.isMusicOn())}</span></button>
           <button class="btn-round" id="mute-btn"><span class="icon">${Art.speaker(!Sound.isMuted())}</span></button>
         </div>
@@ -194,6 +195,9 @@ const UI = (() => {
     hub.querySelector('#album-btn').addEventListener('pointerdown', () => {
       Sound.play('pop');
       showAlbum();
+    });
+    hub.querySelector('#lock-btn').addEventListener('pointerdown', () => {
+      if (window.gateExit) window.gateExit();
     });
     app.appendChild(hub);
   }
@@ -238,6 +242,112 @@ const UI = (() => {
 /* Kein Kontextmenü, kein Doppeltipp-Zoom */
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('dblclick', e => e.preventDefault());
+
+/* ===== Eltern-Gate: Rechenaufgabe statt einfach rausgehen =====
+   Fängt die Zurück-Taste/-Geste ab. Der Home-Button lässt sich aus dem
+   Browser prinzipiell nicht abfangen — dafür Android-App-Anheften nutzen. */
+const Gate = (() => {
+  let overlay = null;
+  let answer = 0;
+  let typed = '';
+
+  function newTask() {
+    const a = 2 + Math.floor(Math.random() * 8);        // 2–9
+    const b = 21 + Math.floor(Math.random() * 39);      // 21–59
+    answer = a + b;
+    typed = '';
+    if (overlay) {
+      overlay.querySelector('.gate-task').textContent = `${a} + ${b} = ?`;
+      overlay.querySelector('.gate-display').textContent = '_';
+    }
+  }
+
+  function show(onSuccess) {
+    if (overlay) return;
+    Sound.play('tap');
+    overlay = document.createElement('div');
+    overlay.className = 'gate-overlay';
+    let pad = '';
+    for (const d of [1, 2, 3, 4, 5, 6, 7, 8, 9, 'C', 0, 'OK']) {
+      pad += `<button class="gate-key${d === 'OK' ? ' gate-ok' : ''}" data-key="${d}">${d === 'C' ? '⌫' : d}</button>`;
+    }
+    overlay.innerHTML = `
+      <div class="gate-box">
+        <button class="gate-close">✕</button>
+        <div class="gate-title">Frag Mama oder Papa!</div>
+        <div class="gate-task"></div>
+        <div class="gate-display">_</div>
+        <div class="gate-pad">${pad}</div>
+      </div>`;
+    document.body.appendChild(overlay);
+    newTask();
+    overlay.querySelector('.gate-close').addEventListener('pointerdown', hide);
+    overlay.querySelectorAll('.gate-key').forEach(btn => {
+      btn.addEventListener('pointerdown', () => {
+        const k = btn.dataset.key;
+        Sound.play('tap');
+        if (k === 'C') typed = typed.slice(0, -1);
+        else if (k === 'OK') {
+          if (parseInt(typed, 10) === answer) {
+            Sound.play('yay');
+            hide();
+            onSuccess();
+          } else {
+            Sound.play('wrong');
+            const box = overlay.querySelector('.gate-box');
+            box.classList.remove('anim-shake');
+            void box.offsetWidth;
+            box.classList.add('anim-shake');
+            newTask();
+          }
+          return;
+        } else if (typed.length < 3) typed += k;
+        overlay.querySelector('.gate-display').textContent = typed || '_';
+      });
+    });
+  }
+
+  function hide() {
+    if (overlay) { overlay.remove(); overlay = null; }
+  }
+
+  return { show };
+})();
+
+/* Zurück-Wächter: erst nach gelöster Aufgabe darf die App verlassen werden */
+(() => {
+  let allowLeave = false;
+  let guardActive = false;
+
+  function arm() {
+    if (guardActive) return;
+    history.pushState({ bennetGuard: true }, '');
+    guardActive = true;
+  }
+  arm();
+
+  window.addEventListener('popstate', () => {
+    guardActive = false; // unser Wächter-Eintrag wurde soeben entfernt
+    if (allowLeave) return;
+    arm(); // sofort wieder scharf stellen
+    Gate.show(() => {
+      allowLeave = true;
+      const toast = document.createElement('div');
+      toast.className = 'update-toast';
+      toast.textContent = '🔓 Sperre 20 Sekunden offen — Zurück-Taste verlässt jetzt die App';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 5000);
+      setTimeout(() => { allowLeave = false; arm(); }, 20000);
+      history.back();
+    });
+  });
+
+  window.gateExit = () => Gate.show(() => {
+    allowLeave = true;
+    setTimeout(() => { allowLeave = false; arm(); }, 20000);
+    history.go(-2);
+  });
+})();
 
 /* Musik darf erst nach der ersten Berührung starten (Browser-Vorgabe) */
 document.addEventListener('pointerdown', function firstTouch() {

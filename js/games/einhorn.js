@@ -117,6 +117,7 @@
         display:flex; flex-direction:column; gap:8px; z-index:30;"></div>
       <button id="eh-new" class="btn-round" style="position:absolute; right:12px; bottom:14px; z-index:31;"><span class="icon">${Art.reset()}</span></button>
       <button id="eh-pick" class="btn-round" style="position:absolute; right:12px; bottom:calc(14px + clamp(66px,10vw,90px)); z-index:31;"><span class="icon" style="width:74%; height:74%;">${Art.picture()}</span></button>
+      <button id="eh-zoom-reset" class="btn-round" style="position:absolute; right:12px; bottom:calc(14px + 2*clamp(66px,10vw,90px)); z-index:31; display:none;"><span class="icon">${Art.lupe()}</span></button>
       <div id="eh-chooser" style="position:absolute; inset:0; z-index:40; display:none; overflow-y:auto; touch-action:pan-y;
         background:linear-gradient(180deg, #ffd9ec 0%, #f8bbd0 100%); padding:clamp(60px,10vh,90px) 4vw 20px;">
         <div style="text-align:center; font-size:clamp(22px,4vw,34px); font-weight:700; color:#a5487e; margin-bottom:14px;">Such dir ein Bild aus!</div>
@@ -149,9 +150,11 @@
         };
         fit();
         ctx = canvas.getContext('2d', { willReadFrequently: true });
-        canvas.addEventListener('pointerdown', onPaint);
-        canvas.addEventListener('pointerdown', () => { dragTool = (tool.type === 'glitter' || tool.type === 'stamp'); });
-        canvas.addEventListener('pointermove', onDragPaint);
+        canvas.addEventListener('pointerdown', onPointerDown);
+        canvas.addEventListener('pointermove', onPointerMove);
+        canvas.addEventListener('pointerup', onPointerUp);
+        canvas.addEventListener('pointercancel', onPointerUp);
+        resetZoom();
         resetCanvas(true);
         ready = true;
         updateProgress();
@@ -323,27 +326,50 @@
       return null;
     }
 
-    /* ---------- Malen ---------- */
-    let dragTool = false;
-    function onPaint(e) {
+    /* ---------- Malen + Zoom-Gesten ----------
+       Füllen passiert beim LOSLASSEN (kurzer Tipp), damit Pinch-Zoom mit zwei
+       Fingern nicht versehentlich malt. Glitzer/Stempel malen weiter beim
+       Berühren und Ziehen (nur mit einem Finger). */
+    let zoom = 1, panX = 0, panY = 0;
+    const pointers = new Map(); // pointerId -> {x, y, startX, startY, startT}
+    let pinch = null;           // {dist, zoom, midX, midY, panX, panY}
+    let hadPinch = false;
+    const zoomResetBtn = stage.querySelector('#eh-zoom-reset');
+
+    function applyZoom() {
+      // Verschiebung so klammern, dass das Bild im Sichtbereich bleibt
+      const limX = (zoom - 1) * frame.clientWidth / 2;
+      const limY = (zoom - 1) * frame.clientHeight / 2;
+      panX = Math.max(-limX, Math.min(limX, panX));
+      panY = Math.max(-limY, Math.min(limY, panY));
+      frame.style.transform = `translate(calc(-50% + ${panX}px), calc(-50% + ${panY}px)) scale(${zoom})`;
+      zoomResetBtn.style.display = zoom > 1.02 ? '' : 'none';
+    }
+    function resetZoom() {
+      zoom = 1; panX = 0; panY = 0;
+      applyZoom();
+    }
+    zoomResetBtn.addEventListener('pointerdown', () => { Sound.play('tap'); resetZoom(); });
+
+    function paintAt(clientX, clientY) {
       if (!ready) return;
       const r = canvas.getBoundingClientRect();
       if (!r.width) return;
-      const x = Math.floor((e.clientX - r.left) * (canvas.width / r.width));
-      const y = Math.floor((e.clientY - r.top) * (canvas.height / r.height));
+      const x = Math.floor((clientX - r.left) * (canvas.width / r.width));
+      const y = Math.floor((clientY - r.top) * (canvas.height / r.height));
       if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) return;
       const sr = stage.getBoundingClientRect();
 
       if (tool.type === 'glitter') {
         stampStar(x, y, 16 + Math.random() * 12);
         Sound.play('sparkle');
-        api.burst(e.clientX - sr.left, e.clientY - sr.top, ['sparkle', 'heart'], 4, 20);
+        api.burst(clientX - sr.left, clientY - sr.top, ['sparkle', 'heart'], 4, 20);
         return;
       }
       if (tool.type === 'stamp') {
         randomStamp(x, y);
         Sound.play('pop');
-        api.burst(e.clientX - sr.left, e.clientY - sr.top, ['sparkle'], 3, 16);
+        api.burst(clientX - sr.left, clientY - sr.top, ['sparkle'], 3, 16);
         return;
       }
       const colorAt = fillColorAt();
@@ -364,11 +390,54 @@
         }
       }
     }
-    function onDragPaint(e) {
-      if (dragTool && (tool.type === 'glitter' || tool.type === 'stamp') && Math.random() < 0.3) onPaint(e);
+
+    const isStampTool = () => tool.type === 'glitter' || tool.type === 'stamp';
+
+    function onPointerDown(e) {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, startX: e.clientX, startY: e.clientY, startT: performance.now() });
+      if (pointers.size === 2) {
+        // Pinch beginnt: Malen abbrechen
+        const [a, b] = [...pointers.values()];
+        pinch = {
+          dist: Math.hypot(a.x - b.x, a.y - b.y),
+          zoom,
+          midX: (a.x + b.x) / 2, midY: (a.y + b.y) / 2,
+          panX, panY
+        };
+        hadPinch = true;
+      } else if (pointers.size === 1) {
+        hadPinch = false;
+        if (isStampTool()) paintAt(e.clientX, e.clientY); // Stempeln sofort
+      }
     }
-    function stopDrag() { dragTool = false; }
-    window.addEventListener('pointerup', stopDrag);
+    function onPointerMove(e) {
+      const p = pointers.get(e.pointerId);
+      if (!p) return;
+      p.x = e.clientX; p.y = e.clientY;
+      if (pinch && pointers.size >= 2) {
+        const [a, b] = [...pointers.values()];
+        const dist = Math.hypot(a.x - b.x, a.y - b.y);
+        zoom = Math.max(1, Math.min(4, pinch.zoom * (dist / Math.max(pinch.dist, 1))));
+        panX = pinch.panX + ((a.x + b.x) / 2 - pinch.midX);
+        panY = pinch.panY + ((a.y + b.y) / 2 - pinch.midY);
+        applyZoom();
+      } else if (pointers.size === 1 && !hadPinch && isStampTool() && Math.random() < 0.3) {
+        paintAt(e.clientX, e.clientY); // Glitzer-/Stempel-Spur ziehen
+      }
+    }
+    function onPointerUp(e) {
+      const p = pointers.get(e.pointerId);
+      pointers.delete(e.pointerId);
+      if (pointers.size < 2) pinch = null;
+      if (!p) return;
+      // Kurzer Ein-Finger-Tipp -> füllen
+      const moved = Math.hypot(e.clientX - p.startX, e.clientY - p.startY);
+      const dur = performance.now() - p.startT;
+      if (!hadPinch && pointers.size === 0 && !isStampTool() && moved < 12 && dur < 500) {
+        paintAt(e.clientX, e.clientY);
+      }
+      if (pointers.size === 0) hadPinch = false;
+    }
 
     /* ---------- Stifte-Box ---------- */
     function makePen(html, onSelect) {
@@ -466,7 +535,7 @@
     chooser.style.display = 'block'; // Start: erst Bild aussuchen
 
     return () => {
-      window.removeEventListener('pointerup', stopDrag);
+      pointers.clear();
     };
   }
 };
