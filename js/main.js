@@ -92,15 +92,14 @@ const UI = (() => {
   }
 
   /* --- Sticker-Album: alle 3 Sterne wird ein Sticker freigeschaltet --- */
-  const STICKERS = [
-    () => Art.unicornMini(), () => Art.chicken(), () => Art.dinoRex(), () => Art.plush('teddy'),
-    () => Art.garden.tulpe(), () => Art.egg(), () => Art.foods.apfel(), () => Art.garden.schmetterling(),
-    () => Art.dinoBronto(), () => Art.plush('bunny'), () => Art.garden.sonnenblume(), () => Art.foods.banane(),
-    () => Art.garden.ente(), () => Art.kid('jump'), () => Art.pillow(), () => Art.garden.pilz(),
-    () => Art.dinoDragon(), () => Art.plush('pig'), () => Art.garden.biene(), () => Art.foods.keule(),
-    () => Art.sun(), () => Art.garden.brunnen(), () => Art.plush('koala'), () => Art.garden.vogelhaus(),
-    () => Art.tree()
+  const STICKER_IMGS = [
+    'stickers/einhorn', 'chars/huhn-1', 'chars/rex-1', 'chars/teddy', 'stickers/blume',
+    'stickers/sonne', 'stickers/schmetterling', 'stickers/regenbogen', 'chars/langhals-1', 'chars/hase',
+    'stickers/ente', 'stickers/eis', 'stickers/ball', 'chars/kind-1', 'stickers/pilz',
+    'stickers/marienkaefer', 'chars/drache-1', 'chars/schwein', 'stickers/auto', 'stickers/rakete',
+    'stickers/stern', 'stickers/torte', 'chars/koala', 'stickers/ballon', 'stickers/krone'
   ];
+  const STICKERS = STICKER_IMGS.map(p => () => Art.charImg(`img/${p}.webp`));
   const STAR_PER_STICKER = 3;
   const unlockedStickers = () => Math.min(Math.floor(Storage.totalStars() / STAR_PER_STICKER), STICKERS.length);
   const hasNewSticker = () => unlockedStickers() > Storage.get('album.seen', 0);

@@ -76,6 +76,13 @@ def main():
             im.thumbnail((512, 512), Image.LANCZOS)
             out = os.path.join(CHARS, base[5:] + '.webp')
             im.save(out, 'WEBP', quality=90)
+        elif base.startswith('sticker-'):
+            stickers_dir = os.path.join(ROOT, 'img', 'stickers')
+            os.makedirs(stickers_dir, exist_ok=True)
+            im = cutout(im)
+            im.thumbnail((320, 320), Image.LANCZOS)
+            out = os.path.join(stickers_dir, base[8:] + '.webp')
+            im.save(out, 'WEBP', quality=88)
         elif base == 'app-icon':
             w, h = im.size
             m = int(w * 0.055)  # weisse Ecken der Icon-Rundung abschneiden

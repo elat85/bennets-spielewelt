@@ -53,6 +53,25 @@ ICON = {
     'app-icon': "App icon for a children's game: bright green meadow at the bottom, blue sky, one big golden star in the center above a small rainbow, bold simple shapes with thick outlines, vibrant colors, square format 1:1, no text.",
 }
 
+STICKERS = {
+    'sticker-einhorn': "Cute white unicorn with pink mane and golden spiral horn, standing proudly.",
+    'sticker-regenbogen': "Bright rainbow arc with two fluffy clouds at its ends.",
+    'sticker-sonne': "Smiling sun with wavy golden rays and rosy cheeks.",
+    'sticker-blume': "Single cheerful pink flower with green leaves and a smiling face.",
+    'sticker-schmetterling': "Colorful butterfly with pink and purple patterned wings.",
+    'sticker-ente': "Cute yellow duckling with orange beak, waving one wing.",
+    'sticker-pilz': "Red toadstool mushroom with white dots and a happy face.",
+    'sticker-eis': "Ice cream cone with three colorful scoops and a cherry on top.",
+    'sticker-rakete': "Cute cartoon rocket with round window, red nose cone and small flame.",
+    'sticker-auto': "Cute little red race car with big friendly eyes on the windshield.",
+    'sticker-ball': "Colorful beach ball with red, yellow and blue segments.",
+    'sticker-krone': "Golden royal crown with colorful gems.",
+    'sticker-stern': "Happy golden star with a smiling face and little arms.",
+    'sticker-torte': "Birthday cake with pink frosting and five colorful candles.",
+    'sticker-ballon': "Bundle of three balloons in red, yellow and blue on strings.",
+    'sticker-marienkaefer': "Cute red ladybug with black dots and big friendly eyes.",
+}
+
 
 def load_key():
     env = os.path.join(ROOT, '.env')
@@ -104,6 +123,8 @@ def main():
         jobs += [(n, p + ' ' + CHAR_STYLE + ' ' + STYLE) for n, p in CHARS.items()]
     if only in (None, 'icon'):
         jobs += [(n, p + ' ' + STYLE) for n, p in ICON.items()]
+    if only in (None, 'sticker'):
+        jobs += [(n, p + ' ' + CHAR_STYLE + ' ' + STYLE) for n, p in STICKERS.items()]
     if redo:
         jobs = [(n, p) for n, p in jobs if n == redo]
         target = os.path.join(OUT, redo + '.png')

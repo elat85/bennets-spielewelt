@@ -1,6 +1,6 @@
 /* Service Worker: cached beim ersten Besuch alle Dateien,
    danach läuft die App komplett offline (Cache-first). */
-const CACHE = 'bennet-v10';
+const CACHE = 'bennet-v11';
 const ASSETS = [
   '.',
   'index.html',
@@ -44,6 +44,22 @@ const ASSETS = [
   'img/chars/hase.webp',
   'img/chars/schwein.webp',
   'img/chars/koala.webp',
+  'img/stickers/einhorn.webp',
+  'img/stickers/regenbogen.webp',
+  'img/stickers/sonne.webp',
+  'img/stickers/blume.webp',
+  'img/stickers/schmetterling.webp',
+  'img/stickers/ente.webp',
+  'img/stickers/pilz.webp',
+  'img/stickers/eis.webp',
+  'img/stickers/rakete.webp',
+  'img/stickers/auto.webp',
+  'img/stickers/ball.webp',
+  'img/stickers/krone.webp',
+  'img/stickers/stern.webp',
+  'img/stickers/torte.webp',
+  'img/stickers/ballon.webp',
+  'img/stickers/marienkaefer.webp',
   'img/einhorn.png',
   'img/regenbogen.png',
   'img/zauberwiese.png',
