@@ -1,4 +1,12 @@
 .claude/
 .env
 app-android/node_modules/
-app-android/android/
+app-android/android/build/
+app-android/android/.gradle/
+app-android/android/app/build/
+app-android/android/capacitor-cordova-android-plugins/build/
+app-android/android/local.properties
+app-android/android/keystore.properties
+*.apk
+*.jks
+*.keystore
