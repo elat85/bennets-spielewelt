@@ -7,7 +7,7 @@
 
   start(stage, api) {
     stage.style.background = '#8fd0f5';
-    stage.innerHTML = Art.scene('img/scenes/trampolin.webp');
+    stage.innerHTML = Art.scene('img/scenes/trampolin.webp', 'center bottom');
 
     // Trampolin
     const tramp = document.createElement('div');

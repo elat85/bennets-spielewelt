@@ -1,4 +1,4 @@
-/* Schaukeln: Im Takt tippen, um Schwung zu holen.
+﻿/* Schaukeln: Im Takt tippen, um Schwung zu holen.
    Richtig hoch schaukeln = Regenbogen und 1 Stern. */
 (window.GameModules = window.GameModules || {}).schaukel = {
   title: 'Schaukeln',
@@ -19,30 +19,31 @@
         </g>
       </svg>`;
 
-    stage.innerHTML = Art.scene('img/scenes/schaukel.webp') +
+    stage.innerHTML = Art.scene('img/scenes/schaukel.webp', 'center bottom') +
       `<div id="sw-rainbow" style="position:absolute; left:calc(50% - clamp(120px,19vw,180px)); top:4%; z-index:2;
         width:clamp(240px,38vw,360px); aspect-ratio:300/160; opacity:0; transition:opacity .6s; pointer-events:none;">${rainbowSvg}</div>`;
 
-    const ROPE = Math.min(300, stage.clientHeight * 0.45);
+    // Gestell steht auf der Graslinie der Szene (~55% Hoehe bei Querformat)
+    const ROPE = Math.min(300, stage.clientHeight * 0.34);
 
     // Gestell
     const frame = document.createElement('div');
     frame.style.cssText = 'position:absolute; inset:0; pointer-events:none; z-index:5;';
     frame.innerHTML = `
-      <div style="position:absolute; left:50%; top:14%; width:${ROPE * 1.15}px; height:18px;
+      <div style="position:absolute; left:50%; top:10%; width:${ROPE * 1.15}px; height:18px;
         background:linear-gradient(#8d6748,#6b4b3a); border-radius:9px; transform:translateX(-50%);
         box-shadow:inset 0 3px 0 rgba(255,255,255,.2), 0 4px 6px rgba(0,0,0,.25);"></div>
-      <div style="position:absolute; left:calc(50% - ${ROPE * 0.52}px); top:14%; width:16px; height:${ROPE * 1.28}px;
+      <div style="position:absolute; left:calc(50% - ${ROPE * 0.52}px); top:10%; width:16px; height:${ROPE * 1.38}px;
         background:linear-gradient(90deg,#8d6748,#75543f); border-radius:8px; transform:rotate(12deg); transform-origin:top center;
         box-shadow:inset 2px 0 0 rgba(255,255,255,.15);"></div>
-      <div style="position:absolute; left:calc(50% + ${ROPE * 0.52}px); top:14%; width:16px; height:${ROPE * 1.28}px;
+      <div style="position:absolute; left:calc(50% + ${ROPE * 0.52}px); top:10%; width:16px; height:${ROPE * 1.38}px;
         background:linear-gradient(90deg,#8d6748,#75543f); border-radius:8px; transform:rotate(-12deg); transform-origin:top center;
         box-shadow:inset 2px 0 0 rgba(255,255,255,.15);"></div>`;
     stage.appendChild(frame);
 
-    // Schaukel (dreht um den Aufhängepunkt)
+    // Schaukel (dreht um den Aufhaengepunkt)
     const swing = document.createElement('div');
-    swing.style.cssText = `position:absolute; left:50%; top:calc(14% + 9px); width:0; height:0;
+    swing.style.cssText = `position:absolute; left:50%; top:calc(10% + 9px); width:0; height:0;
       z-index:6; will-change:transform;`;
     swing.innerHTML = `
       <div style="position:absolute; left:-32px; top:0; width:7px; height:${ROPE}px; background:linear-gradient(90deg,#a5784e,#8d6748); border-radius:4px;"></div>
@@ -63,7 +64,7 @@
     const rainbow = stage.querySelector('#sw-rainbow');
 
     function level() {
-      return Math.min(5, Math.floor((maxAmp / 1.22) * 5)); // 1.22 rad ≈ 70°
+      return Math.min(5, Math.floor((maxAmp / 1.22) * 5)); // 1.22 rad = ca. 70 Grad
     }
     function updateProgress() {
       api.setProgress(api.starRow(level(), 5));
@@ -71,7 +72,7 @@
     updateProgress();
 
     function onTap() {
-      // Anschubsen in Bewegungsrichtung; im Stillstand: anstoßen
+      // Anschubsen in Bewegungsrichtung; im Stillstand: anstossen
       const dir = Math.abs(omega) > 0.05 ? Math.sign(omega) : (theta <= 0 ? 1 : -1);
       omega += dir * 0.38;
       Sound.play('whoosh');
@@ -85,7 +86,7 @@
       const dt = Math.min((now - last) / 1000, 0.04);
       last = now;
 
-      const gL = 4.2;      // g/L – bestimmt das Schaukeltempo
+      const gL = 4.2;      // g/L - bestimmt das Schaukeltempo
       omega += (-gL * Math.sin(theta) - 0.18 * omega) * dt;
       theta += omega * dt;
       theta = Math.max(Math.min(theta, 1.45), -1.45);

@@ -627,8 +627,8 @@ const Art = (() => {
   }
 
   /* ---------- KI-Bilder (img/scenes, img/chars) ---------- */
-  function scene(src) {
-    return `<div class="scene-layer"><img src="${src}" alt=""></div>`;
+  function scene(src, pos = 'center') {
+    return `<div class="scene-layer"><img src="${src}" alt="" style="object-position:${pos};"></div>`;
   }
   function charImg(src) {
     return `<img class="char-img" src="${src}" alt="" draggable="false">`;

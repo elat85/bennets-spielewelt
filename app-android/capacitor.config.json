@@ -1,0 +1,12 @@
+{
+  "appId": "de.ehlert.bennetspielewelt",
+  "appName": "Bennets Spielewelt",
+  "webDir": "www",
+  "server": {
+    "url": "https://elat85.github.io/bennets-spielewelt/",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

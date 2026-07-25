@@ -7,7 +7,7 @@
 
   start(stage, api) {
     stage.style.background = '#9ccc65';
-    stage.innerHTML = Art.scene('img/scenes/dino.webp');
+    stage.innerHTML = Art.scene('img/scenes/dino.webp', 'center bottom');
 
     const MEAT = ['keule', 'steak', 'wurst'];
     const PLANTS = ['brokkoli', 'karotte', 'banane', 'apfel', 'salat'];
@@ -31,7 +31,7 @@
       const wrap = document.createElement('div');
       wrap.className = 'sprite';
       wrap.style.left = `calc(${d.x * 100}% - clamp(70px, 11vw, 110px))`;
-      wrap.style.top = '26%';
+      wrap.style.top = '38%'; // Füße auf der Graslinie der Szene
       wrap.style.width = 'clamp(140px, 22vw, 220px)';
       wrap.style.textAlign = 'center';
       wrap.innerHTML = `

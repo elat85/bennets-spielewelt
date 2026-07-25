@@ -89,7 +89,7 @@
       const r = stage.getBoundingClientRect();
       const x = e.clientX - r.left, y = e.clientY - r.top;
       drag.x = Math.min(Math.max(x / r.width, 0.02), 0.98);
-      drag.y = Math.min(Math.max(y / r.height, 0.36), 0.86);
+      drag.y = Math.min(Math.max(y / r.height, 0.22), 0.88);
       drag.el.style.transform = `translate(${drag.x * r.width - drag.size / 2}px, ${drag.y * r.height - drag.size}px)`;
       // Mülleimer-Feedback
       const t = trash.getBoundingClientRect();

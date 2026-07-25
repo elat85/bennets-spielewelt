@@ -67,11 +67,13 @@
       const n = 5 + Math.floor(Math.random() * 3);
       for (let i = 0; i < n; i++) {
         const corn = document.createElement('div');
-        corn.className = 'sprite anim-pop';
-        corn.innerHTML = Art.corn();
-        corn.style.width = corn.style.height = '24px';
-        const cx = Math.min(Math.max(x + (Math.random() - 0.5) * 110, 10), W() - 26);
-        const cy = Math.min(Math.max(y + (Math.random() - 0.5) * 70, GROUND_TOP * H()), H() - 28);
+        corn.className = 'sprite';
+        // Aufplopp-Animation auf einem INNEREN Element, sonst überschreibt
+        // sie das translate() der Positionierung (Sprite klebt oben links)
+        corn.innerHTML = `<div class="anim-pop" style="width:100%; height:100%; filter:drop-shadow(0 2px 2px rgba(0,0,0,.35));">${Art.corn()}</div>`;
+        corn.style.width = corn.style.height = '32px';
+        const cx = Math.min(Math.max(x + (Math.random() - 0.5) * 110, 10), W() - 34);
+        const cy = Math.min(Math.max(y + (Math.random() - 0.5) * 70, GROUND_TOP * H()), H() - 36);
         corn.style.transform = `translate(${cx}px, ${cy}px)`;
         stage.appendChild(corn);
         corns.push({ el: corn, x: cx, y: cy, claimed: false });
@@ -81,10 +83,10 @@
 
     function layEgg(x, y) {
       const egg = document.createElement('div');
-      egg.className = 'sprite tappable anim-pop';
-      egg.innerHTML = Art.egg();
-      egg.style.width = '36px';
-      egg.style.height = '42px';
+      egg.className = 'sprite tappable';
+      egg.innerHTML = `<div class="anim-pop" style="width:100%; height:100%; filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));">${Art.egg()}</div>`;
+      egg.style.width = '40px';
+      egg.style.height = '46px';
       egg.style.zIndex = 5;
       egg.style.transform = `translate(${x}px, ${y + 14}px)`;
       stage.appendChild(egg);
