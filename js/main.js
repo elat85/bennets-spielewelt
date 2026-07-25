@@ -145,23 +145,25 @@ const UI = (() => {
     hub.className = 'screen hub';
     hub.innerHTML = `
       ${Art.scene('img/scenes/hub.webp')}
-      <div class="hub-topbar">
-        <div style="display:flex; gap:10px; align-items:center;">
+      <div class="hub-header">
+        <div class="hub-side">
           <div class="star-counter"><span class="icon">${Art.star(true)}</span><span id="total-stars">${Storage.totalStars()}</span></div>
           <button class="btn-round" id="album-btn" style="position:relative;">
             <span class="icon">${Art.album()}</span>
             ${hasNewSticker() ? '<span class="badge-new"></span>' : ''}
           </button>
         </div>
-        <div style="display:flex; gap:10px;">
+        <div class="hub-titles">
+          <div class="hub-title">${'Bennets Spielewelt'.split('').map((ch, i) =>
+            ch === ' ' ? ' ' : `<span style="animation-delay:${i * 0.09}s">${ch}</span>`).join('')}</div>
+          <div class="hub-subtitle">Such dir ein Spiel aus!</div>
+        </div>
+        <div class="hub-side">
           <button class="btn-round" id="lock-btn" style="opacity:.75;"><span class="icon">${Art.lock()}</span></button>
           <button class="btn-round" id="music-btn"><span class="icon">${Art.note(Sound.isMusicOn())}</span></button>
           <button class="btn-round" id="mute-btn"><span class="icon">${Art.speaker(!Sound.isMuted())}</span></button>
         </div>
       </div>
-      <div class="hub-title">${'Bennets Spielewelt'.split('').map((ch, i) =>
-        ch === ' ' ? ' ' : `<span style="animation-delay:${i * 0.09}s">${ch}</span>`).join('')}</div>
-      <div class="hub-subtitle">Such dir ein Spiel aus!</div>
       <div class="tile-grid"></div>
     `;
     const grid = hub.querySelector('.tile-grid');

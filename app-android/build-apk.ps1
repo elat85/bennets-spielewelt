@@ -14,7 +14,7 @@ Set-Location (Join-Path $root "android")
 if ($LASTEXITCODE -ne 0) { throw "Gradle-Build fehlgeschlagen" }
 
 $apk = Join-Path $root "android\app\build\outputs\apk\release\app-release.apk"
-$ziel = Join-Path $root "BennetsSpielewelt-1.0.apk"
+$ziel = Join-Path $root "BennetsSpielewelt-1.1.apk"
 Copy-Item $apk $ziel -Force
 
 Write-Output ""

@@ -34,69 +34,95 @@ html, body {
   to   { opacity: 1; transform: scale(1); }
 }
 
-/* ===== Hub / Hauptmenü ===== */
+/* ===== Hub / Hauptmenü =====
+   Bedien-Elemente werden in vmin bemessen, NICHT in vw: ein 2,17:1-Handy hat
+   bei gleicher Höhe fast doppelt so viele vw wie ein 1,6:1-Tablet — mit vw
+   blähen sich Buttons und Titel auf schmalen Bildschirmen auf und überlappen.
+   vmin (kleinere Kante) liefert auf Handy wie Tablet fast gleiche Größen. */
 .hub {
   background: linear-gradient(180deg, #6ec3f5 0%, #a5dcff 40%, #cdeeff 62%, #93cf62 62%, #7ec850 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: max(10px, env(safe-area-inset-top)) 16px 16px;
+  padding:
+    max(8px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(10px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+}
+
+/* Kopfzeile im normalen Fluss (nicht absolut): Titel und Buttons teilen sich
+   eine Flex-Zeile, dadurch kann sich nichts mehr überlagern. */
+.hub-header {
+  width: 100%;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 2vmin, 18px);
+  z-index: 20;
+}
+.hub-side {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: clamp(5px, 1.7vmin, 10px);
+}
+.hub-titles {
+  flex: 1 1 auto;
+  min-width: 0;          /* erlaubt dem Titel zu schrumpfen statt zu drängeln */
+  text-align: center;
 }
 
 .hub-title {
-  font-size: clamp(30px, 5.5vw, 54px);
+  font-size: clamp(18px, 8.5vmin, 54px);
   color: #fff;
   text-shadow: 0 3px 0 #4d8f3a, 0 6px 14px rgba(40, 90, 30, .4);
   font-weight: 700;
   letter-spacing: .5px;
-  margin: 2px 0 0;
+  line-height: 1.15;
   text-align: center;
-  z-index: 2;
 }
 .hub-subtitle {
-  font-size: clamp(13px, 1.8vw, 18px);
+  font-size: clamp(10px, 3.4vmin, 18px);
   color: #2c6420;
   font-weight: 600;
-  z-index: 2;
-  margin-bottom: 2px;
 }
 
-.hub-topbar {
-  position: absolute;
-  top: max(10px, env(safe-area-inset-top));
-  left: 12px;
-  right: 12px;
-  display: flex;
-  justify-content: space-between;
-  pointer-events: none;
-  z-index: 20;
+/* Hochformat: für eine Zeile ist zu wenig Breite da — Titel rutscht unter
+   die Button-Gruppen, statt sie zusammenzuquetschen. */
+@media (orientation: portrait) {
+  .hub-header { flex-wrap: wrap; justify-content: space-between; }
+  .hub-titles { order: 3; flex: 1 0 100%; }
 }
-.hub-topbar > * { pointer-events: auto; }
 
 .star-counter {
   background: linear-gradient(180deg, #ffffff, #f3ecdc);
   border: 3px solid #e8a000;
   border-radius: 40px;
-  padding: 6px 18px 6px 10px;
-  font-size: clamp(20px, 3.5vw, 30px);
+  padding: 4px clamp(10px, 2.5vmin, 18px) 4px clamp(6px, 1.5vmin, 10px);
+  font-size: clamp(15px, 5vmin, 30px);
   font-weight: 700;
   color: #d98e00;
   box-shadow: 0 4px 0 #c78a10, 0 8px 16px rgba(0,0,0,.18);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: clamp(4px, 1.2vmin, 8px);
+  white-space: nowrap;
 }
 .star-counter .icon { width: 1.3em; height: 1.3em; }
 
+/* Kacheln füllen exakt die Resthöhe: grid-auto-rows 1fr statt fester
+   Mindesthöhe, damit auf flachen Schirmen keine Reihe abgeschnitten wird. */
 .tile-grid {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
   max-width: 1250px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: clamp(10px, 2vw, 24px);
-  align-content: center;
-  padding: 8px 0;
+  grid-auto-rows: minmax(0, 1fr);
+  gap: clamp(7px, 2vmin, 24px);
+  padding: clamp(6px, 1.6vmin, 14px) 0 0;
   z-index: 2;
 }
 @media (orientation: portrait) {
@@ -106,14 +132,15 @@ html, body {
 .game-tile {
   position: relative;
   border: none;
-  border-radius: 28px;
-  min-height: clamp(120px, 24vh, 220px);
+  border-radius: clamp(16px, 4vmin, 28px);
+  min-height: 0;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  gap: 2px;
-  padding: 10px 8px 12px;
+  justify-content: center;
+  gap: clamp(1px, .5vmin, 4px);
+  padding: clamp(5px, 1.6vmin, 12px) 6px;
   cursor: pointer;
   box-shadow: inset 0 -6px 0 rgba(0,0,0,.16), inset 0 3px 0 rgba(255,255,255,.35), 0 8px 0 rgba(0,0,0,.18), 0 14px 22px rgba(0,0,0,.15);
   transition: transform .12s;
@@ -123,28 +150,33 @@ html, body {
 }
 .game-tile:active { transform: scale(.94) translateY(4px); box-shadow: inset 0 -3px 0 rgba(0,0,0,.16), 0 3px 0 rgba(0,0,0,.18); }
 .game-tile .tile-art {
-  width: clamp(64px, 11vw, 120px);
+  /* nie höher als gut die halbe Kachel — sonst drückt das Bild den Text raus */
+  height: min(58%, clamp(38px, 16vmin, 120px));
   aspect-ratio: 1;
+  width: auto;
+  min-height: 0;
+  flex: 0 1 auto;
   filter: drop-shadow(0 5px 4px rgba(0,0,0,.22));
-  margin-bottom: 2px;
 }
 .game-tile .tile-label {
-  font-size: clamp(14px, 2vw, 21px);
+  font-size: clamp(10px, 3.8vmin, 21px);
   font-weight: 600;
   text-shadow: 0 2px 3px rgba(0,0,0,.3);
   letter-spacing: .3px;
+  line-height: 1.15;
+  text-align: center;
 }
 .game-tile .tile-stars {
   display: flex;
   gap: 2px;
-  min-height: clamp(12px, 1.8vw, 18px);
+  min-height: clamp(9px, 2.2vmin, 18px);
 }
-.game-tile .tile-stars .icon { width: clamp(12px, 1.8vw, 18px); height: clamp(12px, 1.8vw, 18px); }
+.game-tile .tile-stars .icon { width: clamp(9px, 2.2vmin, 18px); height: clamp(9px, 2.2vmin, 18px); }
 
 /* ===== Runde Buttons ===== */
 .btn-round {
-  width: clamp(56px, 9vw, 78px);
-  height: clamp(56px, 9vw, 78px);
+  width: clamp(40px, 12vmin, 78px);
+  height: clamp(40px, 12vmin, 78px);
   border-radius: 50%;
   border: 3px solid rgba(0,0,0,.1);
   background: linear-gradient(180deg, #ffffff, #ece4d2);
@@ -165,11 +197,12 @@ html, body {
 .game-topbar {
   position: absolute;
   top: max(8px, env(safe-area-inset-top));
-  left: 10px;
-  right: 10px;
+  left: max(10px, env(safe-area-inset-left));
+  right: max(10px, env(safe-area-inset-right));
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   z-index: 90;
   pointer-events: none;
 }
@@ -179,8 +212,9 @@ html, body {
   background: linear-gradient(180deg, #ffffff, #f3ecdc);
   border: 3px solid rgba(0,0,0,.08);
   border-radius: 40px;
-  padding: 6px 18px;
-  font-size: clamp(18px, 3vw, 26px);
+  padding: 4px clamp(10px, 2.6vmin, 18px);
+  white-space: nowrap;
+  font-size: clamp(14px, 4.4vmin, 26px);
   font-weight: 700;
   color: #5b4a38;
   box-shadow: 0 4px 0 #c9bfa8, 0 8px 14px rgba(0,0,0,.16);
@@ -188,7 +222,9 @@ html, body {
   align-items: center;
   gap: 6px;
 }
-.game-progress .icon { width: 1.2em; height: 1.2em; }
+/* inline-block, sonst erzwingt das globale .icon{display:block} einen
+   Zeilenumbruch zwischen Symbol und Zahl */
+.game-progress .icon { width: 1.2em; height: 1.2em; display: inline-block; vertical-align: -.22em; }
 .game-progress .stars-row { display: flex; gap: 3px; }
 .game-progress .stars-row .icon { width: 1.1em; height: 1.1em; }
 
@@ -345,23 +381,27 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: max(10px, env(safe-area-inset-top));
+  padding: max(10px, env(safe-area-inset-top))
+           max(10px, env(safe-area-inset-right))
+           0
+           max(10px, env(safe-area-inset-left));
 }
 .album-title {
-  margin-top: clamp(60px, 11vh, 90px);
-  font-size: clamp(24px, 4.5vw, 40px);
+  margin-top: clamp(44px, 15vmin, 90px);
+  font-size: clamp(18px, 7vmin, 40px);
   font-weight: 700;
   color: #8d5a3b;
   text-shadow: 0 2px 0 rgba(255,255,255,.6);
 }
 .album-grid {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
   max-width: 1100px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(clamp(80px, 12vw, 130px), 1fr));
-  gap: clamp(10px, 2vw, 20px);
-  padding: 16px clamp(14px, 3vw, 40px) 24px;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(64px, 17vmin, 130px), 1fr));
+  gap: clamp(8px, 2vmin, 20px);
+  padding: clamp(8px, 2vmin, 16px) clamp(10px, 3vmin, 40px) max(16px, env(safe-area-inset-bottom));
   overflow-y: auto;
   touch-action: pan-y;
   align-content: start;
@@ -430,58 +470,60 @@ html, body {
   position: relative;
   background: linear-gradient(180deg, #ffffff, #f3ecdc);
   border-radius: 26px;
-  padding: clamp(16px, 3vh, 28px) clamp(20px, 4vw, 40px);
+  padding: clamp(10px, 3vmin, 28px) clamp(14px, 5vmin, 40px);
   box-shadow: 0 10px 0 #c9bfa8, 0 20px 40px rgba(0,0,0,.4);
   text-align: center;
   max-width: min(92vw, 420px);
+  max-height: 94vh;
+  overflow: auto;
 }
 .gate-close {
   position: absolute;
-  top: 8px;
-  right: 12px;
+  top: 4px;
+  right: 10px;
   border: none;
   background: none;
-  font-size: clamp(20px, 3vw, 26px);
+  font-size: clamp(18px, 4vmin, 26px);
   color: #a89e8c;
   cursor: pointer;
   padding: 6px;
 }
 .gate-title {
-  font-size: clamp(17px, 2.6vw, 22px);
+  font-size: clamp(13px, 3.4vmin, 22px);
   font-weight: 600;
   color: #8a7a60;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 .gate-task {
-  font-size: clamp(28px, 5vw, 40px);
+  font-size: clamp(22px, 6.5vmin, 40px);
   font-weight: 700;
   color: #463a52;
 }
 .gate-display {
-  font-size: clamp(24px, 4vw, 32px);
+  font-size: clamp(18px, 5.5vmin, 32px);
   font-weight: 700;
   color: #2c5a80;
   background: #e8f2fa;
   border-radius: 12px;
-  margin: 8px auto 12px;
-  padding: 4px 0;
+  margin: clamp(4px, 1.2vmin, 8px) auto clamp(6px, 1.8vmin, 12px);
+  padding: 2px 0;
   width: min(60%, 160px);
   min-height: 1.3em;
 }
 .gate-pad {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: clamp(6px, 1.2vh, 10px);
+  gap: clamp(4px, 1.4vmin, 10px);
 }
 .gate-key {
   font-family: inherit;
-  font-size: clamp(20px, 3.4vw, 28px);
+  font-size: clamp(16px, 4.4vmin, 28px);
   font-weight: 700;
   color: #463a52;
   background: linear-gradient(180deg, #ffffff, #e8e0cc);
   border: 2px solid rgba(0,0,0,.1);
   border-radius: 14px;
-  padding: clamp(6px, 1.4vh, 12px) 0;
+  padding: clamp(4px, 1.6vmin, 12px) 0;
   cursor: pointer;
   box-shadow: 0 3px 0 #c9bfa8;
 }
