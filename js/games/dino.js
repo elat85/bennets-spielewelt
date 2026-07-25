@@ -106,13 +106,18 @@
       });
       const r = stage.getBoundingClientRect();
       if (hit && hit.likes.includes(drag.food)) {
-        // Richtig! Schmatzen + Freude
+        // Richtig! Kauen, Schmatzen + Freude
         Sound.play('chomp');
+        api.buzz(15);
         setTimeout(() => Sound.play('giggle'), 250);
-        hit.body.classList.remove('anim-happy', 'anim-breathe');
+        hit.body.classList.remove('anim-happy', 'anim-breathe', 'chewing');
         void hit.body.offsetWidth; // Animation neu starten
-        hit.body.classList.add('anim-happy');
-        setTimeout(() => hit.body.classList.add('anim-breathe'), 650);
+        hit.body.classList.add('chewing');
+        setTimeout(() => {
+          hit.body.classList.remove('chewing');
+          hit.body.classList.add('anim-happy');
+        }, 750);
+        setTimeout(() => hit.body.classList.add('anim-breathe'), 1400);
         api.burst(e.clientX - r.left, e.clientY - r.top, ['heart', 'sparkle'], 8, 28);
         drag.ghost.remove();
         // Slot mit neuem Futter füllen

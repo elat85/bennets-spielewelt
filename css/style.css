@@ -426,6 +426,75 @@ html, body {
   50%      { transform: rotate(7deg); }
 }
 
+/* Laufzyklus: Beine schwingen nur, wenn der Sprite .walking hat */
+.art-step-a, .art-step-b {
+  transform-box: fill-box;
+  transform-origin: center top;
+}
+.walking .art-step-a { animation: art-step .3s ease-in-out infinite; }
+.walking .art-step-b { animation: art-step .3s ease-in-out infinite; animation-delay: -.15s; }
+@keyframes art-step {
+  0%, 100% { transform: rotate(24deg); }
+  50%      { transform: rotate(-24deg); }
+}
+
+/* Kauen: Kopf nickt schnell, solange .chewing gesetzt ist */
+.art-head { transform-box: fill-box; transform-origin: 70% 80%; }
+.chewing .art-head { animation: art-chew .18s ease-in-out 4; }
+@keyframes art-chew {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(7deg) translateY(3%); }
+}
+
+/* Haare wehen sanft */
+.art-hair {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: art-hair 2.8s ease-in-out infinite;
+}
+@keyframes art-hair {
+  0%, 100% { transform: skewX(0deg); }
+  50%      { transform: skewX(-5deg) scaleY(1.04); }
+}
+
+/* Titel: Buchstaben wippen nacheinander */
+.hub-title span {
+  display: inline-block;
+  animation: letter-bob 2.6s ease-in-out infinite;
+}
+@keyframes letter-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-7px) rotate(2deg); }
+}
+
+/* ===== Splash-Screen ===== */
+#splash {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: linear-gradient(180deg, #6ec3f5 0%, #a5dcff 55%, #7ec850 100%);
+  transition: opacity .5s;
+  font-family: 'Fredoka', 'Segoe UI', system-ui, sans-serif;
+}
+#splash img {
+  width: clamp(110px, 20vw, 180px);
+  border-radius: 26px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.25);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+#splash .splash-name {
+  font-size: clamp(24px, 4.5vw, 40px);
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 3px 0 #4d8f3a;
+}
+#splash.hide { opacity: 0; pointer-events: none; }
+
 /* ===== Farbige Kacheln ===== */
 .tile-dino      { background: linear-gradient(165deg, #66c157 0%, #3d9134 100%); }
 .tile-einhorn   { background: linear-gradient(165deg, #ff9ad5 0%, #cf58ae 100%); }

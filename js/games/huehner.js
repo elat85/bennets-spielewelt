@@ -97,6 +97,7 @@
       egg.addEventListener('pointerdown', (e) => {
         e.stopPropagation();
         Sound.play('ding');
+        api.buzz(15);
         api.burst(x, y, ['sparkle'], 6, 24);
         egg.remove();
         eggs++;
@@ -178,6 +179,8 @@
     }
 
     function render(c) {
+      const moving = c.state === 'chase' || (c.state === 'wander' && performance.now() >= c.waitUntil);
+      c.el.classList.toggle('walking', moving);
       const bob = c.state === 'chase' ? Math.sin(performance.now() / 60) * 4 : 0;
       // Die gezeichnete Henne schaut nach links → bei Laufrichtung rechts spiegeln
       c.el.style.transform = `translate(${c.x}px, ${c.y + bob}px) scaleX(${c.dir === 1 ? -1 : 1})`;

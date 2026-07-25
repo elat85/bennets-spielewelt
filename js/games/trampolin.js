@@ -95,6 +95,8 @@
         tapsSinceBounce = 0;
         vy = -bounceV;
         Sound.play('boing');
+        // Staubwölkchen beim Abstoß
+        api.burst(stage.clientWidth / 2, matY() + 10, ['puff'], 3, 22);
         mat.style.transform = 'scaleY(1.6) translateY(7px)';
         setTimeout(() => mat.style.transform = '', 110);
         squashUntil = now + 130;

@@ -167,8 +167,10 @@ const Art = (() => {
     const g = id('chick');
     return wrap('0 0 120 120', `
       <defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#ece5d3"/></linearGradient></defs>
-      <g stroke="#e8912d" stroke-width="5" stroke-linecap="round" fill="none">
+      <g class="art-step-a" stroke="#e8912d" stroke-width="5" stroke-linecap="round" fill="none">
         <path d="M50 92 L50 106 M50 106 L42 112 M50 106 L58 112"/>
+      </g>
+      <g class="art-step-b" stroke="#e8912d" stroke-width="5" stroke-linecap="round" fill="none">
         <path d="M70 92 L70 106 M70 106 L62 112 M70 106 L78 112"/>
       </g>
       <path d="M88 52 Q112 40 108 62 Q104 78 88 74 Z" fill="#ece5d3" ${S} stroke-width="4"/>
@@ -209,14 +211,16 @@ const Art = (() => {
       <rect x="82" y="102" width="17" height="30" rx="8" fill="#4e9e3d" ${S} stroke-width="4"/>
       <ellipse cx="76" cy="94" rx="18" ry="15" fill="#cdeab0"/>
       <path d="M60 64 Q54 74 62 76 L70 70 Z" fill="#4e9e3d" ${S} stroke-width="4"/>
-      <path d="M22 26 Q14 44 22 58 Q34 70 54 64 Q66 58 64 42 Q62 24 44 20 Q28 18 22 26 Z" fill="url(#${g})" ${S} stroke-width="4.5"/>
-      <path d="M20 48 L52 52 Q50 60 40 60 Q26 60 20 48 Z" fill="#3d7d30" ${S} stroke-width="4"/>
-      <g fill="#ffffff" stroke="${OUT}" stroke-width="2">
-        <path d="M26 51 L29 56 L32 51 Z"/><path d="M35 52 L38 57 L41 52 Z"/><path d="M44 53 L46 58 L49 53 Z"/>
-      </g>
-      <g class="art-blink"><circle cx="42" cy="34" r="6.5" fill="#fff"/><circle cx="43.5" cy="35" r="3.4" fill="#2d2233"/></g>
-      <path d="M34 26 L48 24" stroke="${OUT}" stroke-width="3.5"/>
-      <circle cx="26" cy="38" r="2.6" fill="#2d5c22"/>`);
+      <g class="art-head">
+        <path d="M22 26 Q14 44 22 58 Q34 70 54 64 Q66 58 64 42 Q62 24 44 20 Q28 18 22 26 Z" fill="url(#${g})" ${S} stroke-width="4.5"/>
+        <path d="M20 48 L52 52 Q50 60 40 60 Q26 60 20 48 Z" fill="#3d7d30" ${S} stroke-width="4"/>
+        <g fill="#ffffff" stroke="${OUT}" stroke-width="2">
+          <path d="M26 51 L29 56 L32 51 Z"/><path d="M35 52 L38 57 L41 52 Z"/><path d="M44 53 L46 58 L49 53 Z"/>
+        </g>
+        <g class="art-blink"><circle cx="42" cy="34" r="6.5" fill="#fff"/><circle cx="43.5" cy="35" r="3.4" fill="#2d2233"/></g>
+        <path d="M34 26 L48 24" stroke="${OUT}" stroke-width="3.5"/>
+        <circle cx="26" cy="38" r="2.6" fill="#2d5c22"/>
+      </g>`);
   }
 
   function dinoBronto() {
@@ -230,10 +234,12 @@ const Art = (() => {
       <ellipse cx="84" cy="106" rx="20" ry="13" fill="#c8ecf4"/>
       <path d="M56 88 Q40 74 38 46 Q37 28 46 22" stroke="url(#${g})" stroke-width="22" fill="none" stroke-linecap="round"/>
       <path d="M56 88 Q40 74 38 46 Q37 28 46 22" stroke="${OUT}" stroke-width="27" fill="none" stroke-linecap="round" opacity="0"/>
-      <ellipse cx="48" cy="20" rx="17" ry="13" fill="url(#${g})" ${S} stroke-width="4.5"/>
-      <g class="art-blink"><circle cx="42" cy="17" r="5" fill="#fff"/><circle cx="43" cy="18" r="2.6" fill="#2d2233"/></g>
-      <path d="M36 26 Q42 31 50 29" stroke="${OUT}" stroke-width="3" fill="none"/>
-      <circle cx="36" cy="24" r="3.4" fill="#ff9fc0" opacity=".8"/>`);
+      <g class="art-head">
+        <ellipse cx="48" cy="20" rx="17" ry="13" fill="url(#${g})" ${S} stroke-width="4.5"/>
+        <g class="art-blink"><circle cx="42" cy="17" r="5" fill="#fff"/><circle cx="43" cy="18" r="2.6" fill="#2d2233"/></g>
+        <path d="M36 26 Q42 31 50 29" stroke="${OUT}" stroke-width="3" fill="none"/>
+        <circle cx="36" cy="24" r="3.4" fill="#ff9fc0" opacity=".8"/>
+      </g>`);
   }
 
   function dinoDragon() {
@@ -246,12 +252,14 @@ const Art = (() => {
       <rect x="58" y="104" width="16" height="28" rx="8" fill="#8a5cc4" ${S} stroke-width="4"/>
       <rect x="84" y="104" width="16" height="28" rx="8" fill="#8a5cc4" ${S} stroke-width="4"/>
       <ellipse cx="76" cy="96" rx="17" ry="13" fill="#ecd9fb"/>
-      <g fill="#ffd93b" ${S} stroke-width="3.5"><path d="M30 16 L34 4 L40 16 Z"/><path d="M44 12 L50 2 L54 14 Z"/></g>
-      <circle cx="44" cy="36" r="22" fill="url(#${g})" ${S} stroke-width="4.5"/>
-      <ellipse cx="30" cy="44" rx="12" ry="9" fill="#c9a6ec" ${S} stroke-width="4"/>
-      <circle cx="26" cy="42" r="2.4" fill="${OUT}"/><circle cx="33" cy="42" r="2.4" fill="${OUT}"/>
-      <g class="art-blink"><circle cx="48" cy="30" r="6" fill="#fff"/><circle cx="49" cy="31" r="3.2" fill="#2d2233"/></g>
-      <path d="M20 52 Q26 58 34 55" stroke="${OUT}" stroke-width="3" fill="none"/>`);
+      <g class="art-head">
+        <g fill="#ffd93b" ${S} stroke-width="3.5"><path d="M30 16 L34 4 L40 16 Z"/><path d="M44 12 L50 2 L54 14 Z"/></g>
+        <circle cx="44" cy="36" r="22" fill="url(#${g})" ${S} stroke-width="4.5"/>
+        <ellipse cx="30" cy="44" rx="12" ry="9" fill="#c9a6ec" ${S} stroke-width="4"/>
+        <circle cx="26" cy="42" r="2.4" fill="${OUT}"/><circle cx="33" cy="42" r="2.4" fill="${OUT}"/>
+        <g class="art-blink"><circle cx="48" cy="30" r="6" fill="#fff"/><circle cx="49" cy="31" r="3.2" fill="#2d2233"/></g>
+        <path d="M20 52 Q26 58 34 55" stroke="${OUT}" stroke-width="3" fill="none"/>
+      </g>`);
   }
 
   function kid(pose = 'stand') {
@@ -279,7 +287,7 @@ const Art = (() => {
       <path d="M46 74 L74 74" stroke="#f5a623" stroke-width="3" opacity=".6"/>
       ${arms[pose]}
       <circle cx="60" cy="34" r="26" fill="#ffd8b5" ${S} stroke-width="4.5"/>
-      <path d="M34 30 Q34 8 60 8 Q86 8 86 30 Q76 18 60 20 Q44 18 34 30 Z" fill="#7a4a2b" ${S} stroke-width="4"/>
+      <g class="art-hair"><path d="M34 30 Q34 8 60 8 Q86 8 86 30 Q76 18 60 20 Q44 18 34 30 Z" fill="#7a4a2b" ${S} stroke-width="4"/></g>
       <g class="art-blink"><circle cx="50" cy="36" r="3.6" fill="#2d2233"/><circle cx="70" cy="36" r="3.6" fill="#2d2233"/></g>
       <path d="M52 46 Q60 52 68 46" stroke="#2d2233" stroke-width="3.5" fill="none"/>
       <circle cx="43" cy="43" r="4.5" fill="#ffb3a0" opacity=".8"/><circle cx="77" cy="43" r="4.5" fill="#ffb3a0" opacity=".8"/>`);

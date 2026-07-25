@@ -115,6 +115,7 @@
           hits++;
           clearTimeout(hit.hideTimer);
           Sound.play('giggle');
+          api.buzz(15);
           api.burst(tx, ty, ['feather', 'feather', 'puff'], 11, 30);
           hit.plushEl.style.transform = 'translateY(80px) scale(.4) rotate(20deg)';
           hit.visible = false;

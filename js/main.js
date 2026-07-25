@@ -52,10 +52,16 @@ const UI = (() => {
     }
   }
 
+  /* --- Sanftes Vibrations-Feedback (wo unterstützt) --- */
+  function buzz(pattern = 15) {
+    try { navigator.vibrate && navigator.vibrate(pattern); } catch (e) {}
+  }
+
   /* --- Stern vergeben: große Feier + Flug zum Zähler --- */
   function awardStar(gameId) {
     Storage.addStar(gameId);
     Sound.play('star');
+    buzz([40, 80, 40]);
     confetti();
     const cele = document.createElement('div');
     cele.className = 'celebration';
@@ -153,7 +159,8 @@ const UI = (() => {
           <button class="btn-round" id="mute-btn"><span class="icon">${Art.speaker(!Sound.isMuted())}</span></button>
         </div>
       </div>
-      <div class="hub-title">Bennets Spielewelt</div>
+      <div class="hub-title">${'Bennets Spielewelt'.split('').map((ch, i) =>
+        ch === ' ' ? ' ' : `<span style="animation-delay:${i * 0.09}s">${ch}</span>`).join('')}</div>
       <div class="hub-subtitle">Such dir ein Spiel aus!</div>
       <div class="tile-grid"></div>
     `;
@@ -215,6 +222,7 @@ const UI = (() => {
     const api = {
       burst: (x, y, kinds, count, size) => burst(screen, x, y, kinds, count, size),
       awardStar: () => awardStar(id),
+      buzz,
       starRow: starRowHtml,
       setProgress(html) {
         const el = screen.querySelector('#progress-icons');
@@ -255,3 +263,13 @@ document.addEventListener('pointerdown', function firstTouch() {
 })();
 
 UI.showHub();
+
+/* Splash sanft ausblenden, sobald alles steht */
+window.addEventListener('load', () => {
+  const splash = document.getElementById('splash');
+  if (!splash) return;
+  setTimeout(() => {
+    splash.classList.add('hide');
+    setTimeout(() => splash.remove(), 600);
+  }, 500);
+});
