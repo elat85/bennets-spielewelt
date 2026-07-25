@@ -5,13 +5,8 @@
   tileClass: 'tile-huehner',
 
   start(stage, api) {
-    stage.style.background = 'linear-gradient(180deg, #6ec3f5 0%, #b5e3ff 40%, #93cf62 40%, #7ec850 100%)';
-    stage.innerHTML = Art.meadowScene({
-      sunPos: 'right',
-      extras: `
-        <div style="position:absolute; left:4%; bottom:52%; width:clamp(110px,16vw,190px); aspect-ratio:160/130;">${Art.barn()}</div>
-        <div style="position:absolute; left:24%; right:24%; bottom:56%; height:clamp(34px,6vh,54px);">${Art.fence()}</div>`
-    });
+    stage.style.background = '#93cf62';
+    stage.innerHTML = Art.scene('img/scenes/huehner.webp');
 
     const chickens = [];
     const corns = [];
@@ -21,7 +16,7 @@
 
     const W = () => stage.clientWidth;
     const H = () => stage.clientHeight;
-    const GROUND_TOP = 0.44; // Hühner laufen nur auf der Wiese
+    const GROUND_TOP = 0.55; // Hühner laufen nur auf der Wiese (unterhalb des Zauns)
 
     function updateProgress() {
       api.setProgress(`<span class="icon" style="width:1.1em; height:1.3em;">${Art.egg()}</span>&nbsp;${eggs} / 3`);
@@ -37,13 +32,13 @@
       stage.appendChild(shadow);
       const el = document.createElement('div');
       el.className = 'sprite';
-      el.innerHTML = Art.chicken();
+      el.innerHTML = Art.charImg('img/chars/huhn-1.webp');
       el.style.width = size + 'px';
       el.style.height = size + 'px';
       el.style.zIndex = 10;
       stage.appendChild(el);
       return {
-        el, shadow, size,
+        el, img: el.querySelector('img'), frame: 1, shadow, size,
         x: Math.random() * (W() - 100) + 20,
         y: (GROUND_TOP + Math.random() * (1 - GROUND_TOP - 0.14)) * H(),
         tx: 0, ty: 0,
@@ -180,7 +175,12 @@
 
     function render(c) {
       const moving = c.state === 'chase' || (c.state === 'wander' && performance.now() >= c.waitUntil);
-      c.el.classList.toggle('walking', moving);
+      // 2-Frame-Laufzyklus: stehendes / laufendes Huhn abwechseln
+      const frame = moving ? (Math.floor(performance.now() / 150) % 2) + 1 : 1;
+      if (frame !== c.frame) {
+        c.frame = frame;
+        c.img.src = `img/chars/huhn-${frame}.webp`;
+      }
       const bob = c.state === 'chase' ? Math.sin(performance.now() / 60) * 4 : 0;
       // Die gezeichnete Henne schaut nach links → bei Laufrichtung rechts spiegeln
       c.el.style.transform = `translate(${c.x}px, ${c.y + bob}px) scaleX(${c.dir === 1 ? -1 : 1})`;

@@ -105,10 +105,7 @@
 
     /* ---------- Aufbau ---------- */
     stage.innerHTML = `
-      <div class="art-layer" style="position:absolute; inset:0; pointer-events:none; z-index:0;">
-        <div style="position:absolute; top:5%; width:clamp(80px,12vw,140px); aspect-ratio:16/9; opacity:.8; animation:float-cloud 55s linear infinite;">${Art.cloud()}</div>
-        <div style="position:absolute; top:58%; width:clamp(60px,9vw,110px); aspect-ratio:16/9; opacity:.6; animation:float-cloud 75s linear infinite; animation-delay:-40s;">${Art.cloud()}</div>
-      </div>
+      ${Art.scene('img/scenes/malbuch.webp')}
       <div id="eh-frame" style="position:absolute; left:50%; top:44%; transform:translate(-50%,-50%);
         background:#fff; border-radius:24px; box-shadow:0 6px 20px rgba(0,0,0,.18); padding:8px; touch-action:none;"></div>
       <div id="eh-box" style="position:absolute; left:50%; bottom:0; transform:translateX(-50%);

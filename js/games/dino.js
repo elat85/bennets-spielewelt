@@ -6,25 +6,17 @@
   tileClass: 'tile-dino',
 
   start(stage, api) {
-    stage.style.background = 'linear-gradient(180deg, #ffd97a 0%, #ffe9b0 34%, #9ccc65 34%, #689f38 100%)';
-    stage.innerHTML = `
-      <div class="art-layer" style="position:absolute; inset:0; pointer-events:none; z-index:0;">
-        <div style="position:absolute; right:6%; top:3%; width:clamp(100px,15vw,180px); aspect-ratio:160/130;">${Art.volcano()}</div>
-        <div style="position:absolute; left:3%; top:6%; width:clamp(80px,12vw,150px); aspect-ratio:130/150;">${Art.palm()}</div>
-        <div style="position:absolute; left:0; right:0; bottom:52%; height:16%;">${Art.hills('#b5d97e', 2)}</div>
-        <div style="position:absolute; top:10%; left:30%; width:clamp(80px,12vw,140px); aspect-ratio:16/9; animation:float-cloud 60s linear infinite;">${Art.cloud()}</div>
-        <div style="position:absolute; left:14%; bottom:8%; width:clamp(30px,4vw,54px); aspect-ratio:60/40;">${Art.grassTuft()}</div>
-        <div style="position:absolute; right:12%; bottom:24%; width:clamp(30px,4vw,54px); aspect-ratio:60/40;">${Art.grassTuft()}</div>
-      </div>`;
+    stage.style.background = '#9ccc65';
+    stage.innerHTML = Art.scene('img/scenes/dino.webp');
 
     const MEAT = ['keule', 'steak', 'wurst'];
     const PLANTS = ['brokkoli', 'karotte', 'banane', 'apfel', 'salat'];
     const ALL = MEAT.concat(PLANTS);
 
     const dinos = [
-      { art: Art.dinoRex(),    likes: MEAT,   bubble: Art.foods.keule(),    x: 0.17 },
-      { art: Art.dinoBronto(), likes: PLANTS, bubble: Art.foods.brokkoli(), x: 0.5 },
-      { art: Art.dinoDragon(), likes: ALL,    bubble: Art.particles.heart,  x: 0.83 }
+      { img: 'img/chars/rex',      likes: MEAT,   bubble: Art.foods.keule(),    x: 0.17 },
+      { img: 'img/chars/langhals', likes: PLANTS, bubble: Art.foods.brokkoli(), x: 0.5 },
+      { img: 'img/chars/drache',   likes: ALL,    bubble: Art.particles.heart,  x: 0.83 }
     ];
 
     let fed = 0;
@@ -47,7 +39,7 @@
           background:linear-gradient(180deg,#ffffff,#f0ead9); border:3px solid rgba(0,0,0,.1); border-radius:50%;
           padding:7px; display:inline-block; margin-bottom:2px; box-shadow:0 4px 8px rgba(0,0,0,.15);
           animation-delay:${i * 0.4}s;">${d.bubble}</div>
-        <div class="dino-body anim-breathe" style="width:100%; aspect-ratio:1; animation-delay:${i * 0.5}s;">${d.art}</div>
+        <div class="dino-body anim-breathe" style="width:100%; aspect-ratio:1; animation-delay:${i * 0.5}s;">${Art.charImg(d.img + '-1.webp')}</div>
         <div class="char-shadow" style="left:15%; right:15%; height:14px; bottom:-6px;"></div>`;
       stage.appendChild(wrap);
       d.el = wrap;
@@ -106,18 +98,19 @@
       });
       const r = stage.getBoundingClientRect();
       if (hit && hit.likes.includes(drag.food)) {
-        // Richtig! Kauen, Schmatzen + Freude
+        // Richtig! Fress-Pose zeigen, Schmatzen + Freude
         Sound.play('chomp');
         api.buzz(15);
         setTimeout(() => Sound.play('giggle'), 250);
-        hit.body.classList.remove('anim-happy', 'anim-breathe', 'chewing');
+        const dinoImg = hit.body.querySelector('img');
+        dinoImg.src = hit.img + '-2.webp';
+        hit.body.classList.remove('anim-happy', 'anim-breathe');
         void hit.body.offsetWidth; // Animation neu starten
-        hit.body.classList.add('chewing');
         setTimeout(() => {
-          hit.body.classList.remove('chewing');
+          dinoImg.src = hit.img + '-1.webp';
           hit.body.classList.add('anim-happy');
-        }, 750);
-        setTimeout(() => hit.body.classList.add('anim-breathe'), 1400);
+        }, 800);
+        setTimeout(() => hit.body.classList.add('anim-breathe'), 1500);
         api.burst(e.clientX - r.left, e.clientY - r.top, ['heart', 'sparkle'], 8, 28);
         drag.ghost.remove();
         // Slot mit neuem Futter füllen

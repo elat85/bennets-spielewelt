@@ -6,17 +6,8 @@
   tileClass: 'tile-trampolin',
 
   start(stage, api) {
-    stage.style.background = 'linear-gradient(180deg, #4aa8e8 0%, #8fd0f5 30%, #c8e9fb 62%, #93cf62 88%, #7ec850 100%)';
-    stage.innerHTML = `
-      <div class="art-layer" style="position:absolute; inset:0; pointer-events:none; z-index:0;">
-        <div id="tr-sun" class="anim-pulse" style="position:absolute; left:calc(50% - clamp(45px,7vw,65px)); top:2%; width:clamp(90px,14vw,130px); aspect-ratio:1;">${Art.sun()}</div>
-        <div style="position:absolute; top:20%; width:clamp(90px,13vw,150px); aspect-ratio:16/9; animation:float-cloud 40s linear infinite;">${Art.cloud()}</div>
-        <div style="position:absolute; top:38%; width:clamp(70px,10vw,120px); aspect-ratio:16/9; animation:float-cloud 58s linear infinite; animation-delay:-22s;">${Art.cloud()}</div>
-        <div style="position:absolute; top:56%; width:clamp(60px,9vw,100px); aspect-ratio:16/9; animation:float-cloud 48s linear infinite; animation-delay:-38s; opacity:.8;">${Art.cloud()}</div>
-        <div style="position:absolute; left:0; right:0; bottom:4%; height:12%;">${Art.hills('#8cc95e', 1)}</div>
-        <div style="position:absolute; left:2%; bottom:4%; width:clamp(70px,10vw,120px); aspect-ratio:120/150;">${Art.tree()}</div>
-        <div style="position:absolute; right:2%; bottom:4%; width:clamp(80px,11vw,140px); aspect-ratio:140/80;">${Art.bush()}</div>
-      </div>`;
+    stage.style.background = '#8fd0f5';
+    stage.innerHTML = Art.scene('img/scenes/trampolin.webp');
 
     // Trampolin
     const tramp = document.createElement('div');
@@ -39,7 +30,7 @@
     stage.appendChild(shadow);
     const kid = document.createElement('div');
     kid.className = 'sprite';
-    kid.innerHTML = Art.kid('jump');
+    kid.innerHTML = Art.charImg('img/chars/kind-1.webp');
     kid.style.cssText = 'left:calc(50% - 45px); width:90px; height:99px; z-index:12; filter:drop-shadow(0 4px 4px rgba(0,0,0,.2));';
     stage.appendChild(kid);
 

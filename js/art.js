@@ -611,6 +611,14 @@ const Art = (() => {
       <path d="M60 54 Q56 34 60 18 M60 18 L50 30 M60 18 L70 30" stroke="#ff6b6b" stroke-width="6" fill="none" stroke-linecap="round"/>`);
   }
 
+  /* ---------- KI-Bilder (img/scenes, img/chars) ---------- */
+  function scene(src) {
+    return `<div class="scene-layer"><img src="${src}" alt=""></div>`;
+  }
+  function charImg(src) {
+    return `<img class="char-img" src="${src}" alt="" draggable="false">`;
+  }
+
   /* Partikel */
   const particles = {
     heart:   `<svg viewBox="0 0 40 40" style="width:100%;height:100%;"><path d="M20 34 Q4 22 4 12 Q4 2 13 4 Q18 5 20 11 Q22 5 27 4 Q36 2 36 12 Q36 22 20 34 Z" fill="#ff6b6b" stroke="#d64545" stroke-width="2"/></svg>`,
@@ -624,7 +632,7 @@ const Art = (() => {
 
   return {
     sun, cloud, hills, grassTuft, flowerSmall, tree, pine, bush, fence, barn, volcano, palm,
-    meadowScene,
+    meadowScene, scene, charImg,
     chicken, corn, egg, dinoRex, dinoBronto, dinoDragon, kid, plush, pillow,
     foods, garden,
     sofa, bed, chair, toybox, basket, windowArt, picture,

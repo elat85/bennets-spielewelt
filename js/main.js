@@ -7,13 +7,13 @@ const UI = (() => {
   const app = document.getElementById('app');
   const ORDER = ['dino', 'einhorn', 'garten', 'huehner', 'trampolin', 'kissen', 'schaukel'];
   const TILE_ART = {
-    dino: () => Art.dinoRex(),
+    dino: () => Art.charImg('img/chars/rex-1.webp'),
     einhorn: () => Art.unicornMini(),
     garten: () => Art.garden.tulpe(),
-    huehner: () => Art.chicken(),
-    trampolin: () => Art.trampolineMini(),
-    kissen: () => Art.pillow(),
-    schaukel: () => Art.swingMini()
+    huehner: () => Art.charImg('img/chars/huhn-1.webp'),
+    trampolin: () => Art.charImg('img/chars/kind-1.webp'),
+    kissen: () => Art.charImg('img/chars/teddy.webp'),
+    schaukel: () => Art.charImg('img/chars/kind-2.webp')
   };
   let currentCleanup = null;
 
@@ -145,7 +145,7 @@ const UI = (() => {
     const hub = document.createElement('div');
     hub.className = 'screen hub';
     hub.innerHTML = `
-      ${Art.meadowScene({ sunPos: 'left' })}
+      ${Art.scene('img/scenes/hub.webp')}
       <div class="hub-topbar">
         <div style="display:flex; gap:10px; align-items:center;">
           <div class="star-counter"><span class="icon">${Art.star(true)}</span><span id="total-stars">${Storage.totalStars()}</span></div>

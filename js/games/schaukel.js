@@ -19,11 +19,9 @@
         </g>
       </svg>`;
 
-    stage.innerHTML = Art.meadowScene({
-      sunPos: 'left',
-      extras: `<div id="sw-rainbow" style="position:absolute; left:calc(50% - clamp(120px,19vw,180px)); top:4%;
-        width:clamp(240px,38vw,360px); aspect-ratio:300/160; opacity:0; transition:opacity .6s;">${rainbowSvg}</div>`
-    });
+    stage.innerHTML = Art.scene('img/scenes/schaukel.webp') +
+      `<div id="sw-rainbow" style="position:absolute; left:calc(50% - clamp(120px,19vw,180px)); top:4%; z-index:2;
+        width:clamp(240px,38vw,360px); aspect-ratio:300/160; opacity:0; transition:opacity .6s; pointer-events:none;">${rainbowSvg}</div>`;
 
     const ROPE = Math.min(300, stage.clientHeight * 0.45);
 
@@ -53,7 +51,7 @@
         background:linear-gradient(#e05d4b,#b23a2c); border:3px solid #8d2b20; border-radius:8px;
         box-shadow:inset 0 3px 0 rgba(255,255,255,.3), 0 4px 5px rgba(0,0,0,.3);"></div>
       <div style="position:absolute; left:-44px; top:${ROPE - 102}px; width:88px; height:97px;
-        filter:drop-shadow(0 3px 4px rgba(0,0,0,.25));">${Art.kid('sit')}</div>`;
+        filter:drop-shadow(0 3px 4px rgba(0,0,0,.25));">${Art.charImg('img/chars/kind-2.webp')}</div>`;
     stage.appendChild(swing);
 
     let theta = 0.12;   // Auslenkung in rad

@@ -6,14 +6,8 @@
   tileClass: 'tile-garten',
 
   start(stage, api) {
-    stage.style.background = 'linear-gradient(180deg, #6ec3f5 0%, #b5e3ff 36%, #93cf62 36%, #7ec850 100%)';
-    stage.innerHTML = `
-      <div class="art-layer" style="position:absolute; inset:0; pointer-events:none; z-index:0;">
-        <div style="position:absolute; left:3%; top:3%; width:clamp(80px,12vw,130px); aspect-ratio:1;">${Art.sun()}</div>
-        <div style="position:absolute; top:6%; width:clamp(90px,14vw,160px); aspect-ratio:16/9; animation:float-cloud 48s linear infinite;">${Art.cloud()}</div>
-        <div style="position:absolute; top:15%; width:clamp(70px,10vw,120px); aspect-ratio:16/9; animation:float-cloud 66s linear infinite; animation-delay:-25s; opacity:.85;">${Art.cloud()}</div>
-        <div style="position:absolute; left:0; right:0; bottom:56%; height:14%;">${Art.hills('#a8d878', 0)}</div>
-      </div>`;
+    stage.style.background = '#93cf62';
+    stage.innerHTML = Art.scene('img/scenes/garten.webp');
 
     const KINDS = Object.keys(Art.garden);
     const BASE_SIZE = {

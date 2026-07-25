@@ -6,23 +6,10 @@
   tileClass: 'tile-kissen',
 
   start(stage, api) {
-    // Kinderzimmer: Tapete mit Punkten + Holzboden
-    stage.style.background = `
-      radial-gradient(circle at 20% 24%, #ffe9c9 0 10px, transparent 11px),
-      radial-gradient(circle at 70% 12%, #ffe9c9 0 8px, transparent 9px),
-      radial-gradient(circle at 45% 40%, #ffe9c9 0 9px, transparent 10px),
-      radial-gradient(circle at 90% 34%, #ffe9c9 0 10px, transparent 11px),
-      linear-gradient(180deg, #ffdba7 0%, #ffd092 58%, transparent 58%),
-      repeating-linear-gradient(90deg, #c9a06c 0 90px, #bd9260 90px 92px, #c9a06c 92px 180px, #b3855a 180px 182px),
-      linear-gradient(180deg, #c9a06c 0%, #b3855a 100%)`;
+    stage.style.background = '#ffdba7';
+    stage.innerHTML = Art.scene('img/scenes/kissen.webp');
 
-    stage.innerHTML = `
-      <div class="art-layer" style="position:absolute; inset:0; pointer-events:none; z-index:1;">
-        <div style="position:absolute; left:6%; top:6%; width:clamp(80px,11vw,140px); aspect-ratio:140/160;">${Art.windowArt()}</div>
-        <div style="position:absolute; right:8%; top:8%; width:clamp(70px,9vw,110px); aspect-ratio:110/90;">${Art.picture()}</div>
-      </div>`;
-
-    const PLUSHIES = ['teddy', 'bunny', 'pig', 'koala'];
+    const PLUSHIES = ['teddy', 'hase', 'schwein', 'koala'];
     let hits = 0;
     const GOAL = 10;
     let running = true;
@@ -49,7 +36,7 @@
         transition:transform .25s ease-out;
         left:calc(${h.x * 100}% - clamp(30px,4.5vw,45px)); top:calc(${h.y * 100}% - clamp(64px,10vw,100px));
         transform:translateY(80px) scale(.4);`;
-      plush.innerHTML = Art.plush('teddy');
+      plush.innerHTML = Art.charImg('img/chars/teddy.webp');
       stage.appendChild(plush);
       const furn = document.createElement('div');
       furn.className = 'sprite';
@@ -70,7 +57,7 @@
       if (free.length) {
         const h = free[Math.floor(Math.random() * free.length)];
         h.visible = true;
-        h.plushEl.innerHTML = Art.plush(PLUSHIES[Math.floor(Math.random() * PLUSHIES.length)]);
+        h.plushEl.innerHTML = Art.charImg('img/chars/' + PLUSHIES[Math.floor(Math.random() * PLUSHIES.length)] + '.webp');
         h.plushEl.style.transform = 'translateY(0) scale(1)';
         Sound.play('pop');
         h.hideTimer = setTimeout(() => hide(h), 1700 + Math.random() * 800);

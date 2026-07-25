@@ -199,6 +199,27 @@ html, body {
   touch-action: none;
 }
 
+/* ===== KI-Szenen und -Figuren ===== */
+.scene-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.scene-layer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.char-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
 /* ===== Sprites & Partikel ===== */
 .sprite {
   position: absolute;
